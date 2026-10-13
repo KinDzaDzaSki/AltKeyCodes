@@ -215,16 +215,16 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
             <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="1F6B7" aria-label="Copy Alt + X hex">1F6B7</button></td></tr>
-<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#128695;" aria-label="Copy HTML decimal">&amp;#128695;</button></td></tr>
-<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x1F6B7;" aria-label="Copy HTML hex">&amp;#x1F6B7;</button></td></tr>
-<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\01F6B7" aria-label="Copy CSS escape">\01F6B7</button></td></tr>
-<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\U0001F6B7" aria-label="Copy Python escape">\U0001F6B7</button></td></tr>
-<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u{1F6B7}" aria-label="Copy JavaScript escape">\u{1F6B7}</button></td></tr>
-<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="F0 9F 9A B7" aria-label="Copy UTF-8 bytes">F0 9F 9A B7</button></td></tr>
-<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+1F6B7" aria-label="Copy Unicode codepoint">U+1F6B7</button></td></tr>
-<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Transport and Map Symbols" aria-label="Copy Unicode block">Transport and Map Symbols</button></td></tr>
-<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="So" aria-label="Copy Unicode category">So</button></td></tr>
+            <tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="1F6B7" data-label="Alt + X hex" aria-label="Copy Alt + X hex">1F6B7</button></td></tr>
+<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#128695;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#128695;</button></td></tr>
+<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x1F6B7;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x1F6B7;</button></td></tr>
+<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\01F6B7" data-label="CSS escape" aria-label="Copy CSS escape">\01F6B7</button></td></tr>
+<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\U0001F6B7" data-label="Python escape" aria-label="Copy Python escape">\U0001F6B7</button></td></tr>
+<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u{1F6B7}" data-label="JavaScript escape" aria-label="Copy JavaScript escape">\u{1F6B7}</button></td></tr>
+<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="F0 9F 9A B7" data-label="UTF-8 bytes" aria-label="Copy UTF-8 bytes">F0 9F 9A B7</button></td></tr>
+<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+1F6B7" data-label="Unicode codepoint" aria-label="Copy Unicode codepoint">U+1F6B7</button></td></tr>
+<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Transport and Map Symbols" data-label="Unicode block" aria-label="Copy Unicode block">Transport and Map Symbols</button></td></tr>
+<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="So" data-label="Unicode category" aria-label="Copy Unicode category">So</button></td></tr>
 
           </tbody>
         </table>
@@ -245,18 +245,18 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
     </section>
     <section class="howto-section" aria-labelledby="code-heading">
       <h2 id="code-heading">How to use no pedestrians in code</h2>
-      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#128695;" aria-label="Copy HTML decimal">&amp;#128695;</button> or <button type="button" class="chip" data-copy="&amp;#x1F6B7;" aria-label="Copy HTML hex">&amp;#x1F6B7;</button></li><li><strong>CSS:</strong> <code>content:"\01F6B7";</code> (<button type="button" class="chip" data-copy="\01F6B7" aria-label="Copy CSS escape">\01F6B7</button>)</li><li><strong>Python:</strong> <code>\U0001F6B7</code> or <code>chr(0x1F6B7)</code></li><li><strong>JavaScript:</strong> <code>\u{1F6B7}</code> or <code>String.fromCodePoint(0x1F6B7)</code></li><li><strong>JSON:</strong> <code>"\uD83D\uDEB7"</code> (surrogate pair)</li></ul>
+      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#128695;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#128695;</button> or <button type="button" class="chip" data-copy="&amp;#x1F6B7;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x1F6B7;</button></li><li><strong>CSS:</strong> <code>content:"\01F6B7";</code> (<button type="button" class="chip" data-copy="\01F6B7" data-label="CSS escape" aria-label="Copy CSS escape">\01F6B7</button>)</li><li><strong>Python:</strong> <code>\U0001F6B7</code> or <code>chr(0x1F6B7)</code></li><li><strong>JavaScript:</strong> <code>\u{1F6B7}</code> or <code>String.fromCodePoint(0x1F6B7)</code></li><li><strong>JSON:</strong> <code>"\uD83D\uDEB7"</code> (surrogate pair)</li></ul>
     </section>
     <section class="related-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related symbols</h2>
       <div class="symbol-grid">
-        <button class="sym" data-copy="☠" data-href="/symbol/u2620-skull-and-crossbones/" aria-label="Copy Skull And Crossbones"><span class="g" aria-hidden="true">☠</span><span class="n">Skull And Crossbones</span><span class="c">Alt+9760</span></button>
-<button class="sym" data-copy="⚠" data-href="/symbol/u26A0-warning-sign/" aria-label="Copy Warning Sign"><span class="g" aria-hidden="true">⚠</span><span class="n">Warning Sign</span><span class="c">Alt+9888</span></button>
-<button class="sym" data-copy="⛔" data-href="/symbol/u26D4-no-entry/" aria-label="Copy No Entry"><span class="g" aria-hidden="true">⛔</span><span class="n">No Entry</span><span class="c">Alt+9940</span></button>
-<button class="sym" data-copy="🚫" data-href="/symbol/u1F6AB-no-entry-sign/" aria-label="Copy No Entry Sign"><span class="g" aria-hidden="true">🚫</span><span class="n">No Entry Sign</span><span class="c">U+1F6AB</span></button>
-<button class="sym" data-copy="☢" data-href="/symbol/u2622-radioactive-sign/" aria-label="Copy Radioactive Sign"><span class="g" aria-hidden="true">☢</span><span class="n">Radioactive Sign</span><span class="c">Alt+9762</span></button>
-<button class="sym" data-copy="☣" data-href="/symbol/u2623-biohazard-sign/" aria-label="Copy Biohazard Sign"><span class="g" aria-hidden="true">☣</span><span class="n">Biohazard Sign</span><span class="c">Alt+9763</span></button>
-<button class="sym" data-copy="♻" data-href="/symbol/u267B-black-universal-recycling-symbol/" aria-label="Copy Black Universal Recycling Symbol"><span class="g" aria-hidden="true">♻</span><span class="n">Black Universal Recycling Symbol</span><span class="c">Alt+9851</span></button>
+        <div class="sym"><button type="button" class="sym-copy" data-copy="☠" data-label="Skull And Crossbones" aria-label="Copy Skull And Crossbones"><span class="g" aria-hidden="true">☠</span></button><a class="sym-name" href="/symbol/u2620-skull-and-crossbones/">Skull And Crossbones</a><span class="c">Alt+9760</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="⚠" data-label="Warning Sign" aria-label="Copy Warning Sign"><span class="g" aria-hidden="true">⚠</span></button><a class="sym-name" href="/symbol/u26A0-warning-sign/">Warning Sign</a><span class="c">Alt+9888</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="⛔" data-label="No Entry" aria-label="Copy No Entry"><span class="g" aria-hidden="true">⛔</span></button><a class="sym-name" href="/symbol/u26D4-no-entry/">No Entry</a><span class="c">Alt+9940</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="🚫" data-label="No Entry Sign" aria-label="Copy No Entry Sign"><span class="g" aria-hidden="true">🚫</span></button><a class="sym-name" href="/symbol/u1F6AB-no-entry-sign/">No Entry Sign</a><span class="c">U+1F6AB</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="☢" data-label="Radioactive Sign" aria-label="Copy Radioactive Sign"><span class="g" aria-hidden="true">☢</span></button><a class="sym-name" href="/symbol/u2622-radioactive-sign/">Radioactive Sign</a><span class="c">Alt+9762</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="☣" data-label="Biohazard Sign" aria-label="Copy Biohazard Sign"><span class="g" aria-hidden="true">☣</span></button><a class="sym-name" href="/symbol/u2623-biohazard-sign/">Biohazard Sign</a><span class="c">Alt+9763</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="♻" data-label="Black Universal Recycling Symbol" aria-label="Copy Black Universal Recycling Symbol"><span class="g" aria-hidden="true">♻</span></button><a class="sym-name" href="/symbol/u267B-black-universal-recycling-symbol/">Black Universal Recycling Symbol</a><span class="c">Alt+9851</span></div>
       </div>
     </section>
     <section class="faq-section" aria-labelledby="faq-heading">

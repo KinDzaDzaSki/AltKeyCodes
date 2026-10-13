@@ -233,17 +233,17 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
             <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="1040" aria-label="Copy Alt + decimal">1040</button></td></tr>
-<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="410" aria-label="Copy Alt + X hex">410</button></td></tr>
-<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#1040;" aria-label="Copy HTML decimal">&amp;#1040;</button></td></tr>
-<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x410;" aria-label="Copy HTML hex">&amp;#x410;</button></td></tr>
-<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\0410" aria-label="Copy CSS escape">\0410</button></td></tr>
-<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u0410" aria-label="Copy Python escape">\u0410</button></td></tr>
-<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u0410" aria-label="Copy JavaScript escape">\u0410</button></td></tr>
-<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="D0 90" aria-label="Copy UTF-8 bytes">D0 90</button></td></tr>
-<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+0410" aria-label="Copy Unicode codepoint">U+0410</button></td></tr>
-<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Cyrillic" aria-label="Copy Unicode block">Cyrillic</button></td></tr>
-<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Lu" aria-label="Copy Unicode category">Lu</button></td></tr>
+            <tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="1040" data-label="Alt + decimal" aria-label="Copy Alt + decimal">1040</button></td></tr>
+<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="410" data-label="Alt + X hex" aria-label="Copy Alt + X hex">410</button></td></tr>
+<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#1040;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#1040;</button></td></tr>
+<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x410;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x410;</button></td></tr>
+<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\0410" data-label="CSS escape" aria-label="Copy CSS escape">\0410</button></td></tr>
+<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u0410" data-label="Python escape" aria-label="Copy Python escape">\u0410</button></td></tr>
+<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u0410" data-label="JavaScript escape" aria-label="Copy JavaScript escape">\u0410</button></td></tr>
+<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="D0 90" data-label="UTF-8 bytes" aria-label="Copy UTF-8 bytes">D0 90</button></td></tr>
+<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+0410" data-label="Unicode codepoint" aria-label="Copy Unicode codepoint">U+0410</button></td></tr>
+<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Cyrillic" data-label="Unicode block" aria-label="Copy Unicode block">Cyrillic</button></td></tr>
+<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Lu" data-label="Unicode category" aria-label="Copy Unicode category">Lu</button></td></tr>
 
           </tbody>
         </table>
@@ -266,7 +266,7 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
     </section>
     <section class="howto-section" aria-labelledby="code-heading">
       <h2 id="code-heading">How to use cyrillic capital letter a in code</h2>
-      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#1040;" aria-label="Copy HTML decimal">&amp;#1040;</button> or <button type="button" class="chip" data-copy="&amp;#x410;" aria-label="Copy HTML hex">&amp;#x410;</button></li><li><strong>CSS:</strong> <code>content:"\0410";</code> (<button type="button" class="chip" data-copy="\0410" aria-label="Copy CSS escape">\0410</button>)</li><li><strong>Python:</strong> <code>\u0410</code> or <code>chr(0x410)</code></li><li><strong>JavaScript:</strong> <code>\u0410</code> or <code>String.fromCodePoint(0x410)</code></li><li><strong>JSON:</strong> <code>"\u0410"</code></li></ul>
+      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#1040;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#1040;</button> or <button type="button" class="chip" data-copy="&amp;#x410;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x410;</button></li><li><strong>CSS:</strong> <code>content:"\0410";</code> (<button type="button" class="chip" data-copy="\0410" data-label="CSS escape" aria-label="Copy CSS escape">\0410</button>)</li><li><strong>Python:</strong> <code>\u0410</code> or <code>chr(0x410)</code></li><li><strong>JavaScript:</strong> <code>\u0410</code> or <code>String.fromCodePoint(0x410)</code></li><li><strong>JSON:</strong> <code>"\u0410"</code></li></ul>
     </section>
     <section class="related-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related symbols</h2>

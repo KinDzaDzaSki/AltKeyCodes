@@ -233,17 +233,17 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
             <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="8866" aria-label="Copy Alt + decimal">8866</button></td></tr>
-<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="22A2" aria-label="Copy Alt + X hex">22A2</button></td></tr>
-<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#8866;" aria-label="Copy HTML decimal">&amp;#8866;</button></td></tr>
-<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x22A2;" aria-label="Copy HTML hex">&amp;#x22A2;</button></td></tr>
-<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\22A2" aria-label="Copy CSS escape">\22A2</button></td></tr>
-<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u22A2" aria-label="Copy Python escape">\u22A2</button></td></tr>
-<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u22A2" aria-label="Copy JavaScript escape">\u22A2</button></td></tr>
-<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="E2 8A A2" aria-label="Copy UTF-8 bytes">E2 8A A2</button></td></tr>
-<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+22A2" aria-label="Copy Unicode codepoint">U+22A2</button></td></tr>
-<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Mathematical Operators" aria-label="Copy Unicode block">Mathematical Operators</button></td></tr>
-<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Sm" aria-label="Copy Unicode category">Sm</button></td></tr>
+            <tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="8866" data-label="Alt + decimal" aria-label="Copy Alt + decimal">8866</button></td></tr>
+<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="22A2" data-label="Alt + X hex" aria-label="Copy Alt + X hex">22A2</button></td></tr>
+<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#8866;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#8866;</button></td></tr>
+<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x22A2;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x22A2;</button></td></tr>
+<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\22A2" data-label="CSS escape" aria-label="Copy CSS escape">\22A2</button></td></tr>
+<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u22A2" data-label="Python escape" aria-label="Copy Python escape">\u22A2</button></td></tr>
+<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u22A2" data-label="JavaScript escape" aria-label="Copy JavaScript escape">\u22A2</button></td></tr>
+<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="E2 8A A2" data-label="UTF-8 bytes" aria-label="Copy UTF-8 bytes">E2 8A A2</button></td></tr>
+<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+22A2" data-label="Unicode codepoint" aria-label="Copy Unicode codepoint">U+22A2</button></td></tr>
+<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Mathematical Operators" data-label="Unicode block" aria-label="Copy Unicode block">Mathematical Operators</button></td></tr>
+<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Sm" data-label="Unicode category" aria-label="Copy Unicode category">Sm</button></td></tr>
 
           </tbody>
         </table>
@@ -266,29 +266,29 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
     </section>
     <section class="howto-section" aria-labelledby="code-heading">
       <h2 id="code-heading">How to use right tack in code</h2>
-      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#8866;" aria-label="Copy HTML decimal">&amp;#8866;</button> or <button type="button" class="chip" data-copy="&amp;#x22A2;" aria-label="Copy HTML hex">&amp;#x22A2;</button></li><li><strong>CSS:</strong> <code>content:"\22A2";</code> (<button type="button" class="chip" data-copy="\22A2" aria-label="Copy CSS escape">\22A2</button>)</li><li><strong>Python:</strong> <code>\u22A2</code> or <code>chr(0x22A2)</code></li><li><strong>JavaScript:</strong> <code>\u22A2</code> or <code>String.fromCodePoint(0x22A2)</code></li><li><strong>JSON:</strong> <code>"\u22A2"</code></li></ul>
+      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#8866;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#8866;</button> or <button type="button" class="chip" data-copy="&amp;#x22A2;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x22A2;</button></li><li><strong>CSS:</strong> <code>content:"\22A2";</code> (<button type="button" class="chip" data-copy="\22A2" data-label="CSS escape" aria-label="Copy CSS escape">\22A2</button>)</li><li><strong>Python:</strong> <code>\u22A2</code> or <code>chr(0x22A2)</code></li><li><strong>JavaScript:</strong> <code>\u22A2</code> or <code>String.fromCodePoint(0x22A2)</code></li><li><strong>JSON:</strong> <code>"\u22A2"</code></li></ul>
     </section>
     <section class="related-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related symbols</h2>
       <div class="symbol-grid">
-        <button class="sym" data-copy="±" data-href="/symbol/u00B1-plus-minus-sign/" aria-label="Copy Plus-minus Sign"><span class="g" aria-hidden="true">±</span><span class="n">Plus-minus Sign</span><span class="c">Alt+241</span></button>
-<button class="sym" data-copy="÷" data-href="/symbol/u00F7-division-sign/" aria-label="Copy Division Sign"><span class="g" aria-hidden="true">÷</span><span class="n">Division Sign</span><span class="c">Alt+246</span></button>
-<button class="sym" data-copy="√" data-href="/symbol/u221A-square-root/" aria-label="Copy Square Root"><span class="g" aria-hidden="true">√</span><span class="n">Square Root</span><span class="c">Alt+251</span></button>
-<button class="sym" data-copy="≤" data-href="/symbol/u2264-less-than-or-equal-to/" aria-label="Copy Less-than Or Equal To"><span class="g" aria-hidden="true">≤</span><span class="n">Less-than Or Equal To</span><span class="c">Alt+243</span></button>
-<button class="sym" data-copy="≥" data-href="/symbol/u2265-greater-than-or-equal-to/" aria-label="Copy Greater-than Or Equal To"><span class="g" aria-hidden="true">≥</span><span class="n">Greater-than Or Equal To</span><span class="c">Alt+242</span></button>
-<button class="sym" data-copy="×" data-href="/symbol/u00D7-multiplication-sign/" aria-label="Copy Multiplication Sign"><span class="g" aria-hidden="true">×</span><span class="n">Multiplication Sign</span><span class="c">Alt+0215</span></button>
-<button class="sym" data-copy="∞" data-href="/symbol/u221E-infinity/" aria-label="Copy Infinity"><span class="g" aria-hidden="true">∞</span><span class="n">Infinity</span><span class="c">Alt+236</span></button>
-<button class="sym" data-copy="≈" data-href="/symbol/u2248-almost-equal-to/" aria-label="Copy Almost Equal To"><span class="g" aria-hidden="true">≈</span><span class="n">Almost Equal To</span><span class="c">Alt+247</span></button>
-<button class="sym" data-copy="≡" data-href="/symbol/u2261-identical-to/" aria-label="Copy Identical To"><span class="g" aria-hidden="true">≡</span><span class="n">Identical To</span><span class="c">Alt+240</span></button>
-<button class="sym" data-copy="∑" data-href="/symbol/u2211-n-ary-summation/" aria-label="Copy N-ary Summation"><span class="g" aria-hidden="true">∑</span><span class="n">N-ary Summation</span><span class="c">Alt+8721</span></button>
-<button class="sym" data-copy="≠" data-href="/symbol/u2260-not-equal-to/" aria-label="Copy Not Equal To"><span class="g" aria-hidden="true">≠</span><span class="n">Not Equal To</span><span class="c">Alt+8800</span></button>
-<button class="sym" data-copy="∂" data-href="/symbol/u2202-partial-differential/" aria-label="Copy Partial Differential"><span class="g" aria-hidden="true">∂</span><span class="n">Partial Differential</span><span class="c">Alt+8706</span></button>
-<button class="sym" data-copy="∅" data-href="/symbol/u2205-empty-set/" aria-label="Copy Empty Set"><span class="g" aria-hidden="true">∅</span><span class="n">Empty Set</span><span class="c">Alt+8709</span></button>
-<button class="sym" data-copy="−" data-href="/symbol/u2212-minus-sign/" aria-label="Copy Minus Sign"><span class="g" aria-hidden="true">−</span><span class="n">Minus Sign</span><span class="c">Alt+8722</span></button>
-<button class="sym" data-copy="∇" data-href="/symbol/u2207-nabla/" aria-label="Copy Nabla"><span class="g" aria-hidden="true">∇</span><span class="n">Nabla</span><span class="c">Alt+8711</span></button>
-<button class="sym" data-copy="∈" data-href="/symbol/u2208-element-of/" aria-label="Copy Element Of"><span class="g" aria-hidden="true">∈</span><span class="n">Element Of</span><span class="c">Alt+8712</span></button>
-<button class="sym" data-copy="∫" data-href="/symbol/u222B-integral/" aria-label="Copy Integral"><span class="g" aria-hidden="true">∫</span><span class="n">Integral</span><span class="c">Alt+8747</span></button>
-<button class="sym" data-copy="⟶" data-href="/symbol/u27F6-long-rightwards-arrow/" aria-label="Copy Long Rightwards Arrow"><span class="g" aria-hidden="true">⟶</span><span class="n">Long Rightwards Arrow</span><span class="c">Alt+10230</span></button>
+        <div class="sym"><button type="button" class="sym-copy" data-copy="±" data-label="Plus-minus Sign" aria-label="Copy Plus-minus Sign"><span class="g" aria-hidden="true">±</span></button><a class="sym-name" href="/symbol/u00B1-plus-minus-sign/">Plus-minus Sign</a><span class="c">Alt+241</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="÷" data-label="Division Sign" aria-label="Copy Division Sign"><span class="g" aria-hidden="true">÷</span></button><a class="sym-name" href="/symbol/u00F7-division-sign/">Division Sign</a><span class="c">Alt+246</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="√" data-label="Square Root" aria-label="Copy Square Root"><span class="g" aria-hidden="true">√</span></button><a class="sym-name" href="/symbol/u221A-square-root/">Square Root</a><span class="c">Alt+251</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="≤" data-label="Less-than Or Equal To" aria-label="Copy Less-than Or Equal To"><span class="g" aria-hidden="true">≤</span></button><a class="sym-name" href="/symbol/u2264-less-than-or-equal-to/">Less-than Or Equal To</a><span class="c">Alt+243</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="≥" data-label="Greater-than Or Equal To" aria-label="Copy Greater-than Or Equal To"><span class="g" aria-hidden="true">≥</span></button><a class="sym-name" href="/symbol/u2265-greater-than-or-equal-to/">Greater-than Or Equal To</a><span class="c">Alt+242</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="×" data-label="Multiplication Sign" aria-label="Copy Multiplication Sign"><span class="g" aria-hidden="true">×</span></button><a class="sym-name" href="/symbol/u00D7-multiplication-sign/">Multiplication Sign</a><span class="c">Alt+0215</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∞" data-label="Infinity" aria-label="Copy Infinity"><span class="g" aria-hidden="true">∞</span></button><a class="sym-name" href="/symbol/u221E-infinity/">Infinity</a><span class="c">Alt+236</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="≈" data-label="Almost Equal To" aria-label="Copy Almost Equal To"><span class="g" aria-hidden="true">≈</span></button><a class="sym-name" href="/symbol/u2248-almost-equal-to/">Almost Equal To</a><span class="c">Alt+247</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="≡" data-label="Identical To" aria-label="Copy Identical To"><span class="g" aria-hidden="true">≡</span></button><a class="sym-name" href="/symbol/u2261-identical-to/">Identical To</a><span class="c">Alt+240</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∑" data-label="N-ary Summation" aria-label="Copy N-ary Summation"><span class="g" aria-hidden="true">∑</span></button><a class="sym-name" href="/symbol/u2211-n-ary-summation/">N-ary Summation</a><span class="c">Alt+8721</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="≠" data-label="Not Equal To" aria-label="Copy Not Equal To"><span class="g" aria-hidden="true">≠</span></button><a class="sym-name" href="/symbol/u2260-not-equal-to/">Not Equal To</a><span class="c">Alt+8800</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∂" data-label="Partial Differential" aria-label="Copy Partial Differential"><span class="g" aria-hidden="true">∂</span></button><a class="sym-name" href="/symbol/u2202-partial-differential/">Partial Differential</a><span class="c">Alt+8706</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∅" data-label="Empty Set" aria-label="Copy Empty Set"><span class="g" aria-hidden="true">∅</span></button><a class="sym-name" href="/symbol/u2205-empty-set/">Empty Set</a><span class="c">Alt+8709</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="−" data-label="Minus Sign" aria-label="Copy Minus Sign"><span class="g" aria-hidden="true">−</span></button><a class="sym-name" href="/symbol/u2212-minus-sign/">Minus Sign</a><span class="c">Alt+8722</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∇" data-label="Nabla" aria-label="Copy Nabla"><span class="g" aria-hidden="true">∇</span></button><a class="sym-name" href="/symbol/u2207-nabla/">Nabla</a><span class="c">Alt+8711</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∈" data-label="Element Of" aria-label="Copy Element Of"><span class="g" aria-hidden="true">∈</span></button><a class="sym-name" href="/symbol/u2208-element-of/">Element Of</a><span class="c">Alt+8712</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="∫" data-label="Integral" aria-label="Copy Integral"><span class="g" aria-hidden="true">∫</span></button><a class="sym-name" href="/symbol/u222B-integral/">Integral</a><span class="c">Alt+8747</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="⟶" data-label="Long Rightwards Arrow" aria-label="Copy Long Rightwards Arrow"><span class="g" aria-hidden="true">⟶</span></button><a class="sym-name" href="/symbol/u27F6-long-rightwards-arrow/">Long Rightwards Arrow</a><span class="c">Alt+10230</span></div>
       </div>
     </section>
     <section class="faq-section" aria-labelledby="faq-heading">

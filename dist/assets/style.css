@@ -69,11 +69,18 @@ a:hover{color:var(--accent-hover);}
 .result-count{margin-left:auto;font-size:.875rem;font-weight:500;color:var(--fg-muted);}
 .symbol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}
 .symbol-grid.small{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
-.sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:96px;padding:12px 8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:.875rem;color:var(--fg);cursor:pointer;text-align:center;transition:background 120ms ease,border-color 120ms ease;}
+.sym{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:.875rem;color:var(--fg);text-align:center;transition:background 120ms ease,border-color 120ms ease;}
+a.sym{cursor:pointer;text-decoration:none;}
 .sym:hover{background:var(--bg-muted);border-color:var(--border-strong);}
-.sym:focus{outline:2px solid var(--accent);outline-offset:2px;}
-.sym .g{font-family:var(--mono);font-size:2rem;line-height:1;}
-.sym .n{font-size:.8rem;color:var(--fg-muted);line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.sym:focus-within{border-color:var(--accent);}
+/* Primary affordance: the glyph copies. It fills the tile so the target is large. */
+.sym-copy{display:flex;align-items:center;justify-content:center;width:100%;flex:1 1 auto;min-height:44px;padding:4px 0;background:none;border:0;border-radius:var(--radius-sm);color:inherit;cursor:pointer;}
+.sym-copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.sym-copy .g{font-family:var(--mono);font-size:2rem;line-height:1;}
+/* Secondary affordance: the name navigates to the symbol page. */
+.sym .n,.sym-name{font-size:.8rem;color:var(--fg-muted);line-height:1.2;text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.sym-name:hover{color:var(--accent);text-decoration:underline;}
+.sym-name:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 .sym .c{font-family:var(--mono);font-size:.75rem;color:var(--fg-muted);background:var(--bg-inset);border:1px solid var(--border);border-radius:6px;padding:2px 6px;margin-top:2px;}
 .noscript-notice{padding:16px;background:var(--warn-subtle);border:1px solid var(--border);border-radius:var(--radius);color:var(--warn);margin-top:16px;}
 .group-directory,.guide-directory,.method-section{background:var(--bg-subtle);}
@@ -156,6 +163,19 @@ pre code{background:transparent;padding:0;}
 }
 
 /* All-symbols hub: block jump nav and block sections */
+/* ---------------------------------------------------------------------------
+   Interaction states (Material 3). M3 specifies hover, focus AND pressed for
+   every interactive element, each with a state layer. The site had hover and
+   focus but no pressed state anywhere, so a tap gave no immediate feedback.
+   One overlay rule keeps the states identical across every interactive surface.
+   --------------------------------------------------------------------------- */
+.sym-copy,.chip,.btn,.theme-toggle,.nav-toggle{position:relative;isolation:isolate;}
+.sym-copy::after,.chip::after,.btn::after,.theme-toggle::after,.nav-toggle::after{content:"";position:absolute;inset:0;border-radius:inherit;background:currentColor;opacity:0;pointer-events:none;transition:opacity 120ms ease;}
+.sym-copy:hover::after,.chip:hover::after,.btn:hover::after,.theme-toggle:hover::after,.nav-toggle:hover::after{opacity:.08;}
+.sym-copy:active::after,.chip:active::after,.btn:active::after,.theme-toggle:active::after,.nav-toggle:active::after{opacity:.12;}
+.sym-copy:active,.chip:active,.theme-toggle:active,.nav-toggle:active{transform:none;}
+@media (prefers-reduced-motion:reduce){.sym-copy::after,.chip::after,.btn::after,.theme-toggle::after,.nav-toggle::after{transition:none;}}
+
 .block-jump{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:20px;}
 .block-jump a{font-size:.8rem;color:var(--fg-muted);text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:2px 8px;}
 .block-jump a:hover{color:var(--fg);border-color:var(--border-strong);background:var(--bg-muted);}
@@ -178,7 +198,7 @@ pre code{background:transparent;padding:0;}
 .site-header[data-nav-open] .nav-toggle .bars span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
 @media (prefers-reduced-motion:reduce){.nav-toggle .bars span{transition:none;}}
 
-@media (max-width:768px){
+@media (max-width:839px){
   .nav-toggle{display:inline-flex;}
   .no-js .nav-toggle{display:none;}
   .no-js .site-nav{flex-wrap:wrap;gap:10px;justify-content:flex-end;}
@@ -186,4 +206,19 @@ pre code{background:transparent;padding:0;}
   .js .site-header[data-nav-open] .site-nav{display:flex;}
   .js .site-nav a{padding:12px 0;font-size:1rem;border-bottom:1px solid var(--border);}
   .js .site-nav a:last-child{border-bottom:0;}
+}
+
+/* Touch targets. Measured before this change: the code chip was 79x25 and both
+   header buttons 36x36, all under the 44px minimum (WCAG 2.5.5, M3 48dp).
+   Desktop keeps the compact densities - a mouse does not need 44px. */
+@media (max-width:839px){
+  .chip{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;}
+  .theme-toggle,.nav-toggle{width:44px;height:44px;}
+  .block-jump a{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;}
+  .codes-table td,.codes-table th{padding-block:12px;}
+}
+@media (pointer:coarse){
+  .chip{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;}
+  .theme-toggle,.nav-toggle{width:44px;height:44px;}
+  .block-jump a{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;}
 }

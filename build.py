@@ -276,12 +276,21 @@ def primary_code(s):
 
 
 def symbol_tile(s):
+    """Interactive tile: the glyph COPIES, the name NAVIGATES.
+
+    This used to be one button that both copied and navigated, so clicking a
+    search result copied the character and immediately left the page - the
+    confirmation fired into a page being torn down, and copying several symbols
+    in a row was impossible. Two explicit affordances instead.
+    """
     return (
-        f'<button class="sym" data-copy="{html_esc(s["glyph"])}" '
-        f'data-href="{symbol_url(s)}" aria-label="Copy {html_esc(s["name"])}">'
-        f'<span class="g" aria-hidden="true">{html_esc(s["glyph"])}</span>'
-        f'<span class="n">{html_esc(s["name"])}</span>'
-        f'<span class="c">{html_esc(primary_code(s))}</span></button>'
+        f'<div class="sym">'
+        f'<button type="button" class="sym-copy" data-copy="{html_esc(s["glyph"])}" '
+        f'data-label="{html_esc(s["name"])}" aria-label="Copy {html_esc(s["name"])}">'
+        f'<span class="g" aria-hidden="true">{html_esc(s["glyph"])}</span></button>'
+        f'<a class="sym-name" href="{symbol_url(s)}">{html_esc(s["name"])}</a>'
+        f'<span class="c">{html_esc(primary_code(s))}</span>'
+        f'</div>'
     )
 
 
@@ -299,7 +308,7 @@ def chip(value, label):
         return ""
     return (
         f'<button type="button" class="chip" data-copy="{html_esc(value)}" '
-        f'aria-label="Copy {html_esc(label)}">{html_esc(value)}</button>'
+        f'data-label="{html_esc(label)}" aria-label="Copy {html_esc(label)}">{html_esc(value)}</button>'
     )
 
 

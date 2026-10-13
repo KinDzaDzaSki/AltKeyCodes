@@ -233,19 +233,19 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
             <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Legacy Alt code</th><td><button type="button" class="chip" data-copy="0254" aria-label="Copy Legacy Alt code">0254</button></td></tr>
-<tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="254" aria-label="Copy Alt + decimal">254</button></td></tr>
-<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="FE" aria-label="Copy Alt + X hex">FE</button></td></tr>
-<tr><th scope="row">HTML named entity</th><td><button type="button" class="chip" data-copy="&amp;thorn;" aria-label="Copy HTML named entity">&amp;thorn;</button></td></tr>
-<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#254;" aria-label="Copy HTML decimal">&amp;#254;</button></td></tr>
-<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#xFE;" aria-label="Copy HTML hex">&amp;#xFE;</button></td></tr>
-<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\00FE" aria-label="Copy CSS escape">\00FE</button></td></tr>
-<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u00FE" aria-label="Copy Python escape">\u00FE</button></td></tr>
-<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u00FE" aria-label="Copy JavaScript escape">\u00FE</button></td></tr>
-<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="C3 BE" aria-label="Copy UTF-8 bytes">C3 BE</button></td></tr>
-<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+00FE" aria-label="Copy Unicode codepoint">U+00FE</button></td></tr>
-<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Latin-1 Supplement" aria-label="Copy Unicode block">Latin-1 Supplement</button></td></tr>
-<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Ll" aria-label="Copy Unicode category">Ll</button></td></tr>
+            <tr><th scope="row">Legacy Alt code</th><td><button type="button" class="chip" data-copy="0254" data-label="Legacy Alt code" aria-label="Copy Legacy Alt code">0254</button></td></tr>
+<tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="254" data-label="Alt + decimal" aria-label="Copy Alt + decimal">254</button></td></tr>
+<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="FE" data-label="Alt + X hex" aria-label="Copy Alt + X hex">FE</button></td></tr>
+<tr><th scope="row">HTML named entity</th><td><button type="button" class="chip" data-copy="&amp;thorn;" data-label="HTML named entity" aria-label="Copy HTML named entity">&amp;thorn;</button></td></tr>
+<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#254;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#254;</button></td></tr>
+<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#xFE;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#xFE;</button></td></tr>
+<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\00FE" data-label="CSS escape" aria-label="Copy CSS escape">\00FE</button></td></tr>
+<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u00FE" data-label="Python escape" aria-label="Copy Python escape">\u00FE</button></td></tr>
+<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u00FE" data-label="JavaScript escape" aria-label="Copy JavaScript escape">\u00FE</button></td></tr>
+<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="C3 BE" data-label="UTF-8 bytes" aria-label="Copy UTF-8 bytes">C3 BE</button></td></tr>
+<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+00FE" data-label="Unicode codepoint" aria-label="Copy Unicode codepoint">U+00FE</button></td></tr>
+<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Latin-1 Supplement" data-label="Unicode block" aria-label="Copy Unicode block">Latin-1 Supplement</button></td></tr>
+<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Ll" data-label="Unicode category" aria-label="Copy Unicode category">Ll</button></td></tr>
 
           </tbody>
         </table>
@@ -268,7 +268,7 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
     </section>
     <section class="howto-section" aria-labelledby="code-heading">
       <h2 id="code-heading">How to use latin small letter thorn in code</h2>
-      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#254;" aria-label="Copy HTML decimal">&amp;#254;</button> or <button type="button" class="chip" data-copy="&amp;#xFE;" aria-label="Copy HTML hex">&amp;#xFE;</button>, also <button type="button" class="chip" data-copy="&amp;thorn;" aria-label="Copy HTML named entity">&amp;thorn;</button></li><li><strong>CSS:</strong> <code>content:"\00FE";</code> (<button type="button" class="chip" data-copy="\00FE" aria-label="Copy CSS escape">\00FE</button>)</li><li><strong>Python:</strong> <code>\u00FE</code> or <code>chr(0xFE)</code></li><li><strong>JavaScript:</strong> <code>\u00FE</code> or <code>String.fromCodePoint(0xFE)</code></li><li><strong>JSON:</strong> <code>"\u00FE"</code></li></ul>
+      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#254;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#254;</button> or <button type="button" class="chip" data-copy="&amp;#xFE;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#xFE;</button>, also <button type="button" class="chip" data-copy="&amp;thorn;" data-label="HTML named entity" aria-label="Copy HTML named entity">&amp;thorn;</button></li><li><strong>CSS:</strong> <code>content:"\00FE";</code> (<button type="button" class="chip" data-copy="\00FE" data-label="CSS escape" aria-label="Copy CSS escape">\00FE</button>)</li><li><strong>Python:</strong> <code>\u00FE</code> or <code>chr(0xFE)</code></li><li><strong>JavaScript:</strong> <code>\u00FE</code> or <code>String.fromCodePoint(0xFE)</code></li><li><strong>JSON:</strong> <code>"\u00FE"</code></li></ul>
     </section>
     <section class="related-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related symbols</h2>

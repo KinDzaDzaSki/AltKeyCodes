@@ -233,18 +233,18 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
             <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Legacy Alt code</th><td><button type="button" class="chip" data-copy="45" aria-label="Copy Legacy Alt code">45</button></td></tr>
-<tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="45" aria-label="Copy Alt + decimal">45</button></td></tr>
-<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="2D" aria-label="Copy Alt + X hex">2D</button></td></tr>
-<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#45;" aria-label="Copy HTML decimal">&amp;#45;</button></td></tr>
-<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x2D;" aria-label="Copy HTML hex">&amp;#x2D;</button></td></tr>
-<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\002D" aria-label="Copy CSS escape">\002D</button></td></tr>
-<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u002D" aria-label="Copy Python escape">\u002D</button></td></tr>
-<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u002D" aria-label="Copy JavaScript escape">\u002D</button></td></tr>
-<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="2D" aria-label="Copy UTF-8 bytes">2D</button></td></tr>
-<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+002D" aria-label="Copy Unicode codepoint">U+002D</button></td></tr>
-<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Basic Latin" aria-label="Copy Unicode block">Basic Latin</button></td></tr>
-<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Pd" aria-label="Copy Unicode category">Pd</button></td></tr>
+            <tr><th scope="row">Legacy Alt code</th><td><button type="button" class="chip" data-copy="45" data-label="Legacy Alt code" aria-label="Copy Legacy Alt code">45</button></td></tr>
+<tr><th scope="row">Alt + decimal</th><td><button type="button" class="chip" data-copy="45" data-label="Alt + decimal" aria-label="Copy Alt + decimal">45</button></td></tr>
+<tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="2D" data-label="Alt + X hex" aria-label="Copy Alt + X hex">2D</button></td></tr>
+<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#45;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#45;</button></td></tr>
+<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x2D;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x2D;</button></td></tr>
+<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\002D" data-label="CSS escape" aria-label="Copy CSS escape">\002D</button></td></tr>
+<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\u002D" data-label="Python escape" aria-label="Copy Python escape">\u002D</button></td></tr>
+<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u002D" data-label="JavaScript escape" aria-label="Copy JavaScript escape">\u002D</button></td></tr>
+<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="2D" data-label="UTF-8 bytes" aria-label="Copy UTF-8 bytes">2D</button></td></tr>
+<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+002D" data-label="Unicode codepoint" aria-label="Copy Unicode codepoint">U+002D</button></td></tr>
+<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Basic Latin" data-label="Unicode block" aria-label="Copy Unicode block">Basic Latin</button></td></tr>
+<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="Pd" data-label="Unicode category" aria-label="Copy Unicode category">Pd</button></td></tr>
 
           </tbody>
         </table>
@@ -267,7 +267,7 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
     </section>
     <section class="howto-section" aria-labelledby="code-heading">
       <h2 id="code-heading">How to use hyphen-minus in code</h2>
-      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#45;" aria-label="Copy HTML decimal">&amp;#45;</button> or <button type="button" class="chip" data-copy="&amp;#x2D;" aria-label="Copy HTML hex">&amp;#x2D;</button></li><li><strong>CSS:</strong> <code>content:"\002D";</code> (<button type="button" class="chip" data-copy="\002D" aria-label="Copy CSS escape">\002D</button>)</li><li><strong>Python:</strong> <code>\u002D</code> or <code>chr(0x2D)</code></li><li><strong>JavaScript:</strong> <code>\u002D</code> or <code>String.fromCodePoint(0x2D)</code></li><li><strong>JSON:</strong> <code>"\u002D"</code></li></ul>
+      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#45;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#45;</button> or <button type="button" class="chip" data-copy="&amp;#x2D;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x2D;</button></li><li><strong>CSS:</strong> <code>content:"\002D";</code> (<button type="button" class="chip" data-copy="\002D" data-label="CSS escape" aria-label="Copy CSS escape">\002D</button>)</li><li><strong>Python:</strong> <code>\u002D</code> or <code>chr(0x2D)</code></li><li><strong>JavaScript:</strong> <code>\u002D</code> or <code>String.fromCodePoint(0x2D)</code></li><li><strong>JSON:</strong> <code>"\u002D"</code></li></ul>
     </section>
     <section class="related-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related symbols</h2>

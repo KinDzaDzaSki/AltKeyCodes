@@ -215,16 +215,16 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
             <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="1D102" aria-label="Copy Alt + X hex">1D102</button></td></tr>
-<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#119042;" aria-label="Copy HTML decimal">&amp;#119042;</button></td></tr>
-<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x1D102;" aria-label="Copy HTML hex">&amp;#x1D102;</button></td></tr>
-<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\01D102" aria-label="Copy CSS escape">\01D102</button></td></tr>
-<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\U0001D102" aria-label="Copy Python escape">\U0001D102</button></td></tr>
-<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u{1D102}" aria-label="Copy JavaScript escape">\u{1D102}</button></td></tr>
-<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="F0 9D 84 82" aria-label="Copy UTF-8 bytes">F0 9D 84 82</button></td></tr>
-<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+1D102" aria-label="Copy Unicode codepoint">U+1D102</button></td></tr>
-<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Musical Symbols" aria-label="Copy Unicode block">Musical Symbols</button></td></tr>
-<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="So" aria-label="Copy Unicode category">So</button></td></tr>
+            <tr><th scope="row">Alt + X hex</th><td><button type="button" class="chip" data-copy="1D102" data-label="Alt + X hex" aria-label="Copy Alt + X hex">1D102</button></td></tr>
+<tr><th scope="row">HTML decimal</th><td><button type="button" class="chip" data-copy="&amp;#119042;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#119042;</button></td></tr>
+<tr><th scope="row">HTML hex</th><td><button type="button" class="chip" data-copy="&amp;#x1D102;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x1D102;</button></td></tr>
+<tr><th scope="row">CSS escape</th><td><button type="button" class="chip" data-copy="\01D102" data-label="CSS escape" aria-label="Copy CSS escape">\01D102</button></td></tr>
+<tr><th scope="row">Python escape</th><td><button type="button" class="chip" data-copy="\U0001D102" data-label="Python escape" aria-label="Copy Python escape">\U0001D102</button></td></tr>
+<tr><th scope="row">JavaScript escape</th><td><button type="button" class="chip" data-copy="\u{1D102}" data-label="JavaScript escape" aria-label="Copy JavaScript escape">\u{1D102}</button></td></tr>
+<tr><th scope="row">UTF-8 bytes</th><td><button type="button" class="chip" data-copy="F0 9D 84 82" data-label="UTF-8 bytes" aria-label="Copy UTF-8 bytes">F0 9D 84 82</button></td></tr>
+<tr><th scope="row">Unicode codepoint</th><td><button type="button" class="chip" data-copy="U+1D102" data-label="Unicode codepoint" aria-label="Copy Unicode codepoint">U+1D102</button></td></tr>
+<tr><th scope="row">Unicode block</th><td><button type="button" class="chip" data-copy="Musical Symbols" data-label="Unicode block" aria-label="Copy Unicode block">Musical Symbols</button></td></tr>
+<tr><th scope="row">Unicode category</th><td><button type="button" class="chip" data-copy="So" data-label="Unicode category" aria-label="Copy Unicode category">So</button></td></tr>
 
           </tbody>
         </table>
@@ -245,19 +245,19 @@ if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)
     </section>
     <section class="howto-section" aria-labelledby="code-heading">
       <h2 id="code-heading">How to use musical symbol final barline in code</h2>
-      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#119042;" aria-label="Copy HTML decimal">&amp;#119042;</button> or <button type="button" class="chip" data-copy="&amp;#x1D102;" aria-label="Copy HTML hex">&amp;#x1D102;</button></li><li><strong>CSS:</strong> <code>content:"\01D102";</code> (<button type="button" class="chip" data-copy="\01D102" aria-label="Copy CSS escape">\01D102</button>)</li><li><strong>Python:</strong> <code>\U0001D102</code> or <code>chr(0x1D102)</code></li><li><strong>JavaScript:</strong> <code>\u{1D102}</code> or <code>String.fromCodePoint(0x1D102)</code></li><li><strong>JSON:</strong> <code>"\uD834\uDD02"</code> (surrogate pair)</li></ul>
+      <ul><li><strong>HTML:</strong> <button type="button" class="chip" data-copy="&amp;#119042;" data-label="HTML decimal" aria-label="Copy HTML decimal">&amp;#119042;</button> or <button type="button" class="chip" data-copy="&amp;#x1D102;" data-label="HTML hex" aria-label="Copy HTML hex">&amp;#x1D102;</button></li><li><strong>CSS:</strong> <code>content:"\01D102";</code> (<button type="button" class="chip" data-copy="\01D102" data-label="CSS escape" aria-label="Copy CSS escape">\01D102</button>)</li><li><strong>Python:</strong> <code>\U0001D102</code> or <code>chr(0x1D102)</code></li><li><strong>JavaScript:</strong> <code>\u{1D102}</code> or <code>String.fromCodePoint(0x1D102)</code></li><li><strong>JSON:</strong> <code>"\uD834\uDD02"</code> (surrogate pair)</li></ul>
     </section>
     <section class="related-section" aria-labelledby="related-heading">
       <h2 id="related-heading">Related symbols</h2>
       <div class="symbol-grid">
-        <button class="sym" data-copy="♪" data-href="/symbol/u266A-eighth-note/" aria-label="Copy Eighth Note"><span class="g" aria-hidden="true">♪</span><span class="n">Eighth Note</span><span class="c">Alt+13</span></button>
-<button class="sym" data-copy="♫" data-href="/symbol/u266B-beamed-eighth-notes/" aria-label="Copy Beamed Eighth Notes"><span class="g" aria-hidden="true">♫</span><span class="n">Beamed Eighth Notes</span><span class="c">Alt+14</span></button>
-<button class="sym" data-copy="♯" data-href="/symbol/u266F-music-sharp-sign/" aria-label="Copy Music Sharp Sign"><span class="g" aria-hidden="true">♯</span><span class="n">Music Sharp Sign</span><span class="c">Alt+9839</span></button>
-<button class="sym" data-copy="♭" data-href="/symbol/u266D-music-flat-sign/" aria-label="Copy Music Flat Sign"><span class="g" aria-hidden="true">♭</span><span class="n">Music Flat Sign</span><span class="c">Alt+9837</span></button>
-<button class="sym" data-copy="𝄞" data-href="/symbol/u1D11E-musical-symbol-g-clef/" aria-label="Copy Musical Symbol G Clef"><span class="g" aria-hidden="true">𝄞</span><span class="n">Musical Symbol G Clef</span><span class="c">U+1D11E</span></button>
-<button class="sym" data-copy="♩" data-href="/symbol/u2669-quarter-note/" aria-label="Copy Quarter Note"><span class="g" aria-hidden="true">♩</span><span class="n">Quarter Note</span><span class="c">Alt+9833</span></button>
-<button class="sym" data-copy="♮" data-href="/symbol/u266E-music-natural-sign/" aria-label="Copy Music Natural Sign"><span class="g" aria-hidden="true">♮</span><span class="n">Music Natural Sign</span><span class="c">Alt+9838</span></button>
-<button class="sym" data-copy="𝄢" data-href="/symbol/u1D122-musical-symbol-f-clef/" aria-label="Copy Musical Symbol F Clef"><span class="g" aria-hidden="true">𝄢</span><span class="n">Musical Symbol F Clef</span><span class="c">U+1D122</span></button>
+        <div class="sym"><button type="button" class="sym-copy" data-copy="♪" data-label="Eighth Note" aria-label="Copy Eighth Note"><span class="g" aria-hidden="true">♪</span></button><a class="sym-name" href="/symbol/u266A-eighth-note/">Eighth Note</a><span class="c">Alt+13</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="♫" data-label="Beamed Eighth Notes" aria-label="Copy Beamed Eighth Notes"><span class="g" aria-hidden="true">♫</span></button><a class="sym-name" href="/symbol/u266B-beamed-eighth-notes/">Beamed Eighth Notes</a><span class="c">Alt+14</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="♯" data-label="Music Sharp Sign" aria-label="Copy Music Sharp Sign"><span class="g" aria-hidden="true">♯</span></button><a class="sym-name" href="/symbol/u266F-music-sharp-sign/">Music Sharp Sign</a><span class="c">Alt+9839</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="♭" data-label="Music Flat Sign" aria-label="Copy Music Flat Sign"><span class="g" aria-hidden="true">♭</span></button><a class="sym-name" href="/symbol/u266D-music-flat-sign/">Music Flat Sign</a><span class="c">Alt+9837</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="𝄞" data-label="Musical Symbol G Clef" aria-label="Copy Musical Symbol G Clef"><span class="g" aria-hidden="true">𝄞</span></button><a class="sym-name" href="/symbol/u1D11E-musical-symbol-g-clef/">Musical Symbol G Clef</a><span class="c">U+1D11E</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="♩" data-label="Quarter Note" aria-label="Copy Quarter Note"><span class="g" aria-hidden="true">♩</span></button><a class="sym-name" href="/symbol/u2669-quarter-note/">Quarter Note</a><span class="c">Alt+9833</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="♮" data-label="Music Natural Sign" aria-label="Copy Music Natural Sign"><span class="g" aria-hidden="true">♮</span></button><a class="sym-name" href="/symbol/u266E-music-natural-sign/">Music Natural Sign</a><span class="c">Alt+9838</span></div>
+<div class="sym"><button type="button" class="sym-copy" data-copy="𝄢" data-label="Musical Symbol F Clef" aria-label="Copy Musical Symbol F Clef"><span class="g" aria-hidden="true">𝄢</span></button><a class="sym-name" href="/symbol/u1D122-musical-symbol-f-clef/">Musical Symbol F Clef</a><span class="c">U+1D122</span></div>
       </div>
     </section>
     <section class="faq-section" aria-labelledby="faq-heading">
