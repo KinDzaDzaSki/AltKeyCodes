@@ -1,0 +1,19 @@
+# AltKeyCodes
+> A fast, ad-free reference for 2,052 symbols: legacy Windows Alt codes, Unicode code points, macOS Option keys, HTML entities, CSS escapes and Python/JavaScript escapes.
+
+## Sections
+
+- [Home](https://altkeycodes.com/): Search every symbol by name, alias, glyph or code.
+- [All symbol groups](https://altkeycodes.com/symbols/): Browse 33 curated groups.
+- [Legacy Alt codes](https://altkeycodes.com/legacy-alt-codes/): Full 0–255 OEM 437 / Windows-1252 table.
+- [Escaping symbols in CSS, Python, JavaScript and JSON](https://altkeycodes.com/how-to/escape-symbols-in-code/): Each language escapes Unicode characters differently: CSS uses a backslash with a required trailing space, JavaScript uses \u with braces above the BMP, JSON uses UTF-16 pairs, and Python has both \u and \U forms.
+- [How to type Alt codes on Windows](https://altkeycodes.com/how-to/how-to-type-alt-codes-on-windows/): Alt codes are typed with the left Alt key plus the numeric keypad. Here is the full method, the three-digit and four-digit code tables, and what to do when your keyboard has no numpad.
+- [How to type symbols in HTML](https://altkeycodes.com/how-to/type-symbols-in-html/): HTML accepts three ways to write any symbol: a named entity like &copy;, a decimal escape like &#169;, and a hex escape like &#xA9;. Here is when each one is safe to use.
+- [How to type symbols on a Mac](https://altkeycodes.com/how-to/type-symbols-on-mac/): Macs do not use Alt codes. They use Option key shortcuts and the Character Viewer. Here are the shortcuts for common symbols, the hex entry method, and how to find any character.
+- [How to type symbols without a numpad](https://altkeycodes.com/how-to/type-symbols-without-a-numpad/): Alt codes need a numeric keypad. If your laptop does not have one, these five methods still let you type any symbol: Fn numpad, Character Viewer, Touch Keyboard, HTML entities and copy-paste.
+- [Windows Alt+X hex codes](https://altkeycodes.com/how-to/unicode-alt-x-hex-codes-windows/): Type a Unicode hex code point then press Alt and X to convert it into the character in Word, WordPad and Outlook. Here is how the method works, where it stops, and the registry setting for the numpad form.
+- [What is an Alt code?](https://altkeycodes.com/how-to/what-is-an-alt-code/): An Alt code is a number from an older Windows code page that you type on the numeric keypad while holding Alt. It is not the same as a Unicode code point. Here is how the two systems differ and why it matters.
+
+## Notes
+
+All content is server-rendered static HTML. JavaScript is progressive enhancement only. The dataset contains 2,052 symbols.

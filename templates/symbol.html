@@ -1,0 +1,68 @@
+<article class="symbol-page">
+  <div class="container">
+    <nav aria-label="Breadcrumb" class="breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/symbols/">Symbols</a></li>
+        <li><a href="{{group_url}}">{{group_name}}</a></li>
+        <li aria-current="page">{{symbol_name}}</li>
+      </ol>
+    </nav>
+    <h1>{{h1}}</h1>
+    <div class="glyph-panel">
+      <button type="button" class="glyph-display" data-copy="{{glyph}}" aria-label="Copy the {{symbol_name_lc}} character">
+        <span class="glyph" aria-hidden="true">{{glyph}}</span>
+        <span class="glyph-hint">Click to copy</span>
+      </button>
+    </div>
+    <div class="answer-block">
+      {{{answer_block}}}
+    </div>
+    <section class="codes-section" aria-labelledby="codes-heading">
+      <h2 id="codes-heading">Codes for this symbol</h2>
+      <div class="table-wrap">
+        <table class="codes-table">
+          <caption>Copy any value by clicking it.</caption>
+          <thead>
+            <tr><th scope="col">Method</th><th scope="col">Value</th></tr>
+          </thead>
+          <tbody>
+            {{{codes_rows}}}
+          </tbody>
+        </table>
+      </div>
+      {{{missing_note}}}
+    </section>
+    <section class="howto-section" aria-labelledby="windows-heading">
+      <h2 id="windows-heading">How to type {{symbol_name_lc}} on Windows</h2>
+      <ol class="steps">
+        {{{windows_steps}}}
+      </ol>
+      <p class="caveat">If your keyboard has no numeric keypad, see <a href="/how-to/type-symbols-without-a-numpad/">how to type symbols without a numpad</a>.</p>
+    </section>
+    <section class="howto-section" aria-labelledby="mac-heading">
+      <h2 id="mac-heading">How to type {{symbol_name_lc}} on macOS</h2>
+      {{{mac_content}}}
+    </section>
+    <section class="howto-section" aria-labelledby="code-heading">
+      <h2 id="code-heading">How to use {{symbol_name_lc}} in code</h2>
+      {{{code_content}}}
+    </section>
+    <section class="related-section" aria-labelledby="related-heading">
+      <h2 id="related-heading">Related symbols</h2>
+      <div class="symbol-grid">
+        {{{related_symbols}}}
+      </div>
+    </section>
+    <section class="faq-section" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently asked questions</h2>
+      {{{faq}}}
+    </section>
+    <nav class="prev-next" aria-label="Previous and next symbol">
+      {{{prev_next}}}
+    </nav>
+    <p class="back-link"><a href="{{group_url}}">Back to {{group_name}}</a></p>
+    <p class="byline">By {{author}} on <time datetime="{{published}}" pubdate>{{published}}</time>. Last updated <time datetime="{{updated}}">{{updated}}</time>.</p>
+  </div>
+</article>
+<div id="copy-status" class="copy-status" role="status" aria-live="polite"></div>

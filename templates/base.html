@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="{{lang}}" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{meta_desc}}">
+<link rel="canonical" href="{{canonical}}">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:type" content="{{og_type}}">
+<meta property="og:title" content="{{og_title}}">
+<meta property="og:description" content="{{og_desc}}">
+<meta property="og:url" content="{{og_url}}">
+<meta property="og:site_name" content="{{og_site_name}}">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⌨%3C/text%3E%3C/svg%3E">
+{{{head_extra}}}
+</head>
+<body class="{{body_class}}">
+<a href="#{{skip_target}}" class="skip-link">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="wordmark" href="/" aria-label="AltKeyCodes home">AltKeyCodes</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/symbols/">Symbols</a>
+      <a href="/legacy-alt-codes/">Alt codes</a>
+      <a href="/how-to/type-symbols-without-a-numpad/">No numpad</a>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark theme" title="Toggle theme">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main id="{{skip_target}}">
+{{{content}}}
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>{{footer_about}}</p>
+    <nav aria-label="Footer">
+      <a href="/symbols/">All symbols</a>
+      <a href="/legacy-alt-codes/">Legacy Alt codes</a>
+      <a href="/how-to/what-is-an-alt-code/">What is an Alt code</a>
+      <a href="/how-to/how-to-type-alt-codes-on-windows/">Windows Alt codes</a>
+      <a href="/how-to/type-symbols-on-mac/">Mac symbols</a>
+      <a href="/how-to/type-symbols-in-html/">HTML entities</a>
+      <a href="/how-to/escape-symbols-in-code/">Code escapes</a>
+      <a href="/sitemap.xml">Sitemap</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+    <p class="footer-small">No ads, no tracking, no cookies.</p>
+  </div>
+</footer>
+<script src="/assets/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Local scratch
+dist_orphan/
+*.log
+
+# NOTE: dist/ is intentionally committed — it is the deployable site.
+# Regenerate with: python3 build_symbols.py && python3 build.py

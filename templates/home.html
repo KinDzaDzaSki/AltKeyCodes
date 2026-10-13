@@ -1,0 +1,65 @@
+<section class="hero">
+  <div class="container">
+    <h1>{{h1}}</h1>
+    <p class="hero-sub">{{tagline}}</p>
+    <div class="answer-block">
+      {{{answer_block}}}
+    </div>
+  </div>
+</section>
+<section class="search-panel" aria-label="Symbol search">
+  <div class="container">
+    <div class="search-row">
+      <input type="search" id="q" class="search-input" autofocus placeholder="Search 2,052 symbols — try “check mark”, “degree”, “euro”, “♥” or 2713" aria-label="Search symbols" autocomplete="off" inputmode="search">
+    </div>
+    <div class="filter-row">
+      <label for="group-filter">Group</label>
+      <select id="group-filter" aria-label="Filter by group">
+        <option value="">All groups</option>
+        {{#each group_options}}<option value="{{value}}">{{label}}</option>{{/each}}
+      </select>
+      <label class="checkbox"><input type="checkbox" id="has-alt" aria-label="Has Alt code"> <span>Has Alt code</span></label>
+      <label class="checkbox"><input type="checkbox" id="has-option" aria-label="Has Option shortcut"> <span>Has Option shortcut</span></label>
+      <span id="result-count" class="result-count" aria-live="polite">2,052 symbols</span>
+    </div>
+  </div>
+</section>
+<section class="results-section">
+  <div class="container">
+    <div id="results" class="symbol-grid">
+      {{{results}}}
+    </div>
+    <noscript>
+      <div class="noscript-notice">
+        <p>Search needs JavaScript. Browse <a href="/symbols/">all groups</a> or the <a href="/legacy-alt-codes/">legacy Alt code table</a> instead.</p>
+      </div>
+    </noscript>
+    <div id="recent-copied" class="recent-copied" hidden>
+      <h2>Recently copied</h2>
+      <div id="recent-grid" class="symbol-grid small"></div>
+    </div>
+  </div>
+</section>
+<section class="group-directory">
+  <div class="container">
+    <h2>Browse by group</h2>
+    <div class="group-grid">
+      {{{group_grid}}}
+    </div>
+  </div>
+</section>
+<section class="guide-directory">
+  <div class="container">
+    <h2>How to guides</h2>
+    <div class="card-grid">
+      {{{guide_cards}}}
+    </div>
+  </div>
+</section>
+<section class="method-section">
+  <div class="container">
+    <h2>Method comparison</h2>
+    {{{method_table}}}
+  </div>
+</section>
+<div id="copy-status" class="copy-status" role="status" aria-live="polite"></div>
