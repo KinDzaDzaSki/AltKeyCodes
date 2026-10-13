@@ -9,7 +9,7 @@
   --shadow-md:0 4px 12px -2px rgb(0 0 0/.08),0 2px 4px -2px rgb(0 0 0/.04);
   --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
-  --maxw:1100px;--font-size:16px;
+  --maxw:1100px;--font-size:16px;--header-h:56px;
 }
 [data-theme=dark]{
   --bg:#09090b;--bg-subtle:#101012;--bg-muted:#18181b;--bg-inset:#141416;
@@ -32,8 +32,9 @@ body{margin:0;font-family:var(--sans);font-size:var(--font-size);line-height:1.6
 .skip-link{position:absolute;left:-9999px;z-index:100;padding:8px 16px;background:var(--accent);color:var(--accent-fg);border-radius:var(--radius-sm);}
 .skip-link:focus{left:16px;top:16px;}
 .site-header{position:sticky;top:0;z-index:50;background:var(--bg-subtle);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);}
-.header-inner{display:flex;align-items:center;justify-content:space-between;height:56px;gap:16px;}
-.wordmark{font-size:1.25rem;font-weight:700;color:var(--fg);text-decoration:none;letter-spacing:-0.02em;}
+.header-inner{display:flex;align-items:center;gap:16px;padding-block:10px;}/* NOT height:var(--header-h) - the JS measures this box and writes --header-h,
+   so consuming it here would create a feedback loop that grows the header. */
+.wordmark{margin-right:auto;font-size:1.25rem;font-weight:700;color:var(--fg);text-decoration:none;letter-spacing:-0.02em;}
 .wordmark:hover{color:var(--accent);}
 .site-nav{display:flex;align-items:center;gap:16px;}
 .site-nav a{color:var(--fg-muted);text-decoration:none;font-size:.875rem;font-weight:500;}
@@ -56,7 +57,7 @@ a:hover{color:var(--accent-hover);}
 .answer-block strong{color:var(--fg);}
 .hero{padding-block:clamp(40px,6vw,72px);}
 .hero-sub{font-size:1.125rem;color:var(--fg-muted);max-width:680px;margin-bottom:24px;}
-.search-panel{position:sticky;top:56px;z-index:40;background:var(--bg);border-bottom:1px solid var(--border);padding-block:16px;box-shadow:var(--shadow-sm);}
+.search-panel{position:sticky;top:var(--header-h);z-index:40;background:var(--bg);border-bottom:1px solid var(--border);padding-block:16px;box-shadow:var(--shadow-sm);}
 .search-row{margin-bottom:12px;}
 .search-input{width:100%;height:48px;padding:0 16px;font-size:17px;font-family:var(--sans);border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--bg);color:var(--fg);}
 .search-input:focus{outline:2px solid var(--accent);outline-offset:2px;}
@@ -148,8 +149,6 @@ pre code{background:transparent;padding:0;}
 .btn.secondary{background:var(--bg);color:var(--fg);border-color:var(--border-strong);}
 .btn.secondary:hover{background:var(--bg-muted);}
 @media (max-width:640px){
-  .header-inner{height:auto;padding-block:10px;flex-wrap:wrap;}
-  .site-nav{gap:12px;}
   .symbol-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
   .sym{min-height:84px;padding:8px;}
   .sym .g{font-size:1.6rem;}
@@ -164,3 +163,28 @@ pre code{background:transparent;padding:0;}
 .block-section{margin-top:clamp(28px,3vw,40px);}
 .block-section h2{display:flex;align-items:baseline;gap:8px;}
 .block-section h2 .count{font-size:.8rem;font-weight:500;color:var(--fg-subtle);}
+/* Hamburger toggle + mobile nav dropdown. The nav is only lifted out of the
+   header row when JS is present, so a no-JS visitor still gets a wrapping nav.
+   The header keeps a single row here, which is what lets --header-h stay 56px
+   and stop the sticky search panel sliding under it. */
+.nav-toggle{display:none;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--fg);cursor:pointer;}
+.nav-toggle:hover{background:var(--bg-muted);}
+.nav-toggle .bars{display:block;position:relative;width:18px;height:14px;}
+.nav-toggle .bars span{position:absolute;left:0;right:0;height:2px;background:currentColor;border-radius:2px;transition:transform 160ms ease,opacity 120ms ease;}
+.nav-toggle .bars span:nth-child(1){top:0;}
+.nav-toggle .bars span:nth-child(2){top:6px;}
+.nav-toggle .bars span:nth-child(3){top:12px;}
+.site-header[data-nav-open] .nav-toggle .bars span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.site-header[data-nav-open] .nav-toggle .bars span:nth-child(2){opacity:0;}
+.site-header[data-nav-open] .nav-toggle .bars span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+@media (prefers-reduced-motion:reduce){.nav-toggle .bars span{transition:none;}}
+
+@media (max-width:768px){
+  .nav-toggle{display:inline-flex;}
+  .no-js .nav-toggle{display:none;}
+  .no-js .site-nav{flex-wrap:wrap;gap:10px;justify-content:flex-end;}
+  .js .site-nav{position:absolute;left:0;right:0;top:100%;display:none;flex-direction:column;align-items:stretch;gap:0;background:var(--bg);border-bottom:1px solid var(--border);box-shadow:var(--shadow-md);padding:6px clamp(16px,4vw,32px) 10px;}
+  .js .site-header[data-nav-open] .site-nav{display:flex;}
+  .js .site-nav a{padding:12px 0;font-size:1rem;border-bottom:1px solid var(--border);}
+  .js .site-nav a:last-child{border-bottom:0;}
+}

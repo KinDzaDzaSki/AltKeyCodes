@@ -45,4 +45,36 @@
   document.addEventListener('click',e=>{const b=e.target.closest('.sym,[data-copy]');if(!b)return;const text=b.dataset.copy||b.textContent;const name=b.querySelector('.n')?.textContent||b.closest('.sym')?.querySelector('.n')?.textContent;if(text)copy(text,name);const href=b.dataset.href;if(href&&!b.classList.contains('sym'))location.href=href;else if(href&&e.shiftKey===false&&e.ctrlKey===false&&e.metaKey===false){window.location.href=href;}});
 
   fetch('/assets/symbols.json').then(r=>r.json()).then(data=>{symbols=data;doSearch();renderRecent();}).catch(()=>{if(resultsEl&&resultsEl.children.length===0)resultsEl.innerHTML='<p class="noscript-notice">Could not load search index.</p>';});
+
+  // Hamburger menu (mobile). Progressive enhancement: with JS off the nav stays
+  // visible and wraps, because the dropdown rules are scoped to .js.
+  const navHeader=document.querySelector('.site-header');
+  const navToggle=document.getElementById('nav-toggle');
+  if(navHeader){
+    if(navToggle){
+      const setNav=o=>{if(o)navHeader.setAttribute('data-nav-open','');else navHeader.removeAttribute('data-nav-open');navToggle.setAttribute('aria-expanded',String(!!o));navToggle.setAttribute('aria-label',o?'Close menu':'Open menu');};
+      navToggle.addEventListener('click',()=>setNav(!navHeader.hasAttribute('data-nav-open')));
+      document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navHeader.hasAttribute('data-nav-open')){setNav(false);navToggle.focus();}});
+      document.addEventListener('click',e=>{if(navHeader.hasAttribute('data-nav-open')&&!navHeader.contains(e.target))setNav(false);});
+      Array.prototype.forEach.call(navHeader.querySelectorAll('.site-nav a'),a=>a.addEventListener('click',()=>setNav(false)));
+      addEventListener('resize',()=>{if(innerWidth>768)setNav(false);});
+    }
+    // Drive the sticky search panel offset from the measured header height, so a
+    // taller header (zoom, font swap, wrap) can never clip the search input.
+    let lastHeaderH=0;
+    const syncHeader=()=>{
+      const h=navHeader.offsetHeight;
+      if(h&&h!==lastHeaderH){lastHeaderH=h;root.style.setProperty('--header-h',h+'px');}
+    };
+    syncHeader();
+    addEventListener('resize',syncHeader);
+    addEventListener('orientationchange',syncHeader);
+    addEventListener('load',syncHeader);
+    requestAnimationFrame(syncHeader);
+    // The header's height changes after the font swap and after the first layout,
+    // so a one-shot read leaves --header-h a pixel or two short and the sticky
+    // search panel clips. ResizeObserver keeps it exact for the whole session.
+    if(window.ResizeObserver){new ResizeObserver(syncHeader).observe(navHeader);}
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(syncHeader);
+  }
 })();
