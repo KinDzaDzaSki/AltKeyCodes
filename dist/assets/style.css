@@ -122,7 +122,6 @@ pre code{background:transparent;padding:0;}
 .faq-section p{margin-left:0;}
 .prev-next{display:flex;justify-content:space-between;gap:16px;margin-top:40px;flex-wrap:wrap;}
 .back-link{margin-top:20px;}
-.byline{font-size:.85rem;color:var(--fg-muted);margin-top:24px;}
 .guide-body{max-width:720px;}
 .guide-body h2{margin-top:40px;}
 .guide-body h3{margin-top:28px;}

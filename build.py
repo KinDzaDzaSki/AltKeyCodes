@@ -789,7 +789,6 @@ def build_symbol_page(s, sym_by_id, groups, config, build_date):
         "related_symbols": "\n".join(symbol_tile(r) for r in related),
         "faq": faq_html,
         "prev_next": build_prev_next(s, group, sym_by_id),
-        "author": config["author"],
         "published": build_date,
         "updated": build_date,
     })
@@ -1327,7 +1326,8 @@ def build_guide_page(g, config, build_date):
             "url": url,
             "datePublished": g.get("updated", build_date),
             "dateModified": g.get("updated", build_date),
-            "author": {"@type": "Person", "@id": config.get("author_url", base + "/about/"), "name": config["author"]},
+            # No personal byline: the organization is attributed as the author.
+            "author": {"@type": "Organization", "@id": base + "/#organization"},
             "publisher": {"@type": "Organization", "@id": base + "/#organization", "name": config["legal_name"]},
         },
     ]
@@ -1344,7 +1344,6 @@ def build_guide_page(g, config, build_date):
         "h1": g["h1"],
         "body": g["html"],
         "guide_links": f"<ul>{guide_links}</ul>",
-        "author": config["author"],
         "published": g.get("updated", build_date),
         "updated": g.get("updated", build_date),
     })
