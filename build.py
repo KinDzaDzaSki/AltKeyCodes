@@ -885,6 +885,103 @@ def build_symbols_index_page(config, symbols, build_date):
     return ctx
 
 
+# Guide display order for the /how-to/ index. Falls back to any guide not listed,
+# so adding a content/guides/*.md file can never drop it off the index.
+GUIDE_ORDER = [
+    "what-is-an-alt-code",
+    "how-to-type-alt-codes-on-windows",
+    "type-symbols-without-a-numpad",
+    "unicode-alt-x-hex-codes-windows",
+    "type-symbols-on-mac",
+    "type-symbols-in-html",
+    "escape-symbols-in-code",
+]
+
+
+def ordered_guides():
+    by_slug = {g["slug"]: g for g in guides_global}
+    out = [by_slug[s] for s in GUIDE_ORDER if s in by_slug]
+    out += [g for g in guides_global if g["slug"] not in GUIDE_ORDER]
+    return out
+
+
+def build_guides_index_page(config, build_date):
+    """Category page for /how-to/. The guide breadcrumb points here, mirroring the
+    way the symbol breadcrumb points at /symbols/."""
+    title = "How to Type Symbols: Every Alt Code Guide"
+    desc = ("Every AltKeyCodes guide in one place: Windows Alt codes, typing symbols "
+            "without a numpad, macOS Option keys, HTML entities and CSS escapes.")
+    assert 120 <= len(desc) <= 160, f"description is {len(desc)} chars"
+    assert len(title) <= 60, f"title is {len(title)} chars"
+    base = config["base_url"].rstrip("/")
+    url = base + "/how-to/"
+    glist = ordered_guides()
+    cards = "\n".join(
+        f'<a class="guide-card" href="{guide_url(g)}"><h3>{html_esc(g["title"])}</h3>'
+        f'<p>{html_esc(g["description"])}</p></a>'
+        for g in glist
+    )
+    graph = [
+        {
+            "@type": "WebSite",
+            "@id": base + "/#website",
+            "url": base + "/",
+            "name": config["name"],
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {"@type": "EntryPoint", "urlTemplate": base + "/?q={search_term_string}"},
+                "query-input": "required name=search_term_string",
+            },
+        },
+        {
+            "@type": "Organization",
+            "@id": base + "/#organization",
+            "name": config["legal_name"],
+            "url": base + "/",
+        },
+        {
+            "@type": "BreadcrumbList",
+            "@id": url + "#breadcrumb",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": base + "/"},
+                {"@type": "ListItem", "position": 2, "name": "How to", "item": url},
+            ],
+        },
+        {
+            "@type": "CollectionPage",
+            "@id": url + "#collection",
+            "url": url,
+            "name": "How to type symbols",
+            "description": desc,
+        },
+        {
+            "@type": "ItemList",
+            "@id": url + "#items",
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": g["title"], "item": base + guide_url(g)}
+                for i, g in enumerate(glist)
+            ],
+        },
+    ]
+    ctx = base_context(config, title, desc, "/how-to/", og_type="website",
+                       head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
+                       body_class="guides-index-page")
+    ctx.update({
+        "h1": "How to type symbols",
+        "tagline": f"{len(glist)} guides covering every method for typing a symbol on Windows, macOS and the web.",
+        "answer_block": (
+            "Start with the guide that matches your keyboard and your target. With a Windows "
+            "keyboard that has a numeric keypad, the Alt code guide is the fastest route. On a "
+            "laptop without a numpad, or on a Mac, or when you are writing HTML or code, one of "
+            "the other guides covers that path."
+        ),
+        "guide_cards": cards,
+        "guides_count": len(glist),
+    })
+    ctx["content"] = render(load_text(TEMPLATES / "guides-index.html"), ctx)
+    return ctx
+
+
 def build_home_page(config, symbols, build_date):
     title = "AltKeyCodes: Alt Codes, Unicode & Symbol Reference"
     desc = "Search 2,052 symbols. Find legacy Windows Alt codes, Unicode codepoints, macOS Option keys, HTML entities, CSS escapes and Python/JS escapes. No ads."
@@ -1177,6 +1274,12 @@ def write_sitemap(config, pages):
     if total <= 5000:
         urls = []
         for path in sorted(pages):
+            # A sitemap must list the CANONICAL url. Pages are keyed by file path
+            # ("/how-to/index.html"), but every page's canonical is the clean
+            # directory form ("/how-to/"), so strip the index.html or the sitemap
+            # advertises URLs that no page claims and search engines discard.
+            if path.endswith("/index.html"):
+                path = path[: -len("index.html")]
             url = base + path
             urls.append(f"  <url>\n    <loc>{html_esc(url)}</loc>\n    <lastmod>{today}</lastmod>\n  </url>")
         xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n"
@@ -1197,6 +1300,7 @@ def write_llms(config, guides):
         f"- [Home]({base}/): Search every symbol by name, alias, glyph or code.",
         f"- [All symbol groups]({base}/symbols/): Browse 33 curated groups.",
         f"- [Legacy Alt codes]({base}/legacy-alt-codes/): Full 0–255 OEM 437 / Windows-1252 table.",
+        f"- [All how-to guides]({base}/how-to/): Every guide to typing symbols on Windows, macOS, HTML and in code.",
     ]
     for g in guides:
         lines.append(f"- [{g['h1']}]({base}{guide_url(g)}): {g['description']}")
@@ -1294,7 +1398,7 @@ def main():
     copy_assets()
 
     pages_html = {}
-    counts = {"home": 0, "group": 0, "symbol": 0, "table": 0, "guide": 0, "symbols_index": 0, "notfound": 0}
+    counts = {"home": 0, "group": 0, "symbol": 0, "table": 0, "guide": 0, "guides_index": 0, "symbols_index": 0, "notfound": 0}
 
     # Home
     home_ctx = build_home_page(config, symbols, build_date)
@@ -1341,6 +1445,13 @@ def main():
         write_file(DIST / "how-to" / g["slug"] / "index.html", gpage)
         pages_html[guide_url(g) + "index.html"] = gpage
         counts["guide"] += 1
+    # Guides index (/how-to/) — the breadcrumb target for every guide
+    gi_ctx = build_guides_index_page(config, build_date)
+    gi_html = render(load_text(TEMPLATES / "base.html"), gi_ctx)
+    write_file(DIST / "how-to" / "index.html", gi_html)
+    pages_html["/how-to/index.html"] = gi_html
+    counts["guides_index"] += 1
+
     # 404
     nf_ctx = build_notfound_page(config)
     nf_html = render(load_text(TEMPLATES / "base.html"), nf_ctx)
@@ -1372,6 +1483,7 @@ def main():
     print(f"  Group index: {counts['symbols_index']}")
     print(f"  Legacy table:{counts['table']}")
     print(f"  Guides:      {counts['guide']}")
+    print(f"  How-to index:{counts['guides_index']}")
     print(f"  404:         {counts['notfound']}")
     print(f"  Total HTML:  {sum(counts.values())}")
     print(f"  Total bytes: {total_bytes}")

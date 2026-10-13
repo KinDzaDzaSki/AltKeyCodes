@@ -6,6 +6,7 @@
 - [Home](https://altkeycodes.com/): Search every symbol by name, alias, glyph or code.
 - [All symbol groups](https://altkeycodes.com/symbols/): Browse 33 curated groups.
 - [Legacy Alt codes](https://altkeycodes.com/legacy-alt-codes/): Full 0–255 OEM 437 / Windows-1252 table.
+- [All how-to guides](https://altkeycodes.com/how-to/): Every guide to typing symbols on Windows, macOS, HTML and in code.
 - [Escaping symbols in CSS, Python, JavaScript and JSON](https://altkeycodes.com/how-to/escape-symbols-in-code/): Each language escapes Unicode characters differently: CSS uses a backslash with a required trailing space, JavaScript uses \u with braces above the BMP, JSON uses UTF-16 pairs, and Python has both \u and \U forms.
 - [How to type Alt codes on Windows](https://altkeycodes.com/how-to/how-to-type-alt-codes-on-windows/): Alt codes are typed with the left Alt key plus the numeric keypad. Here is the full method, the three-digit and four-digit code tables, and what to do when your keyboard has no numpad.
 - [How to type symbols in HTML](https://altkeycodes.com/how-to/type-symbols-in-html/): HTML accepts three ways to write any symbol: a named entity like &copy;, a decimal escape like &#169;, and a hex escape like &#xA9;. Here is when each one is safe to use.
