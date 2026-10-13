@@ -345,6 +345,24 @@ def char_unicode(ch):
 # ---------------------------------------------------------------------------
 
 
+def build_ga4_tag(config):
+    """GA4 gtag.js snippet, emitted only when a measurement id is configured."""
+    mid = (config.get("ga4_measurement_id") or "").strip()
+    if not mid:
+        return ""
+    return (
+        "<!-- Google tag (gtag.js) -->\n"
+        f'<script async src="https://www.googletagmanager.com/gtag/js?id={mid}"></script>\n'
+        "<script>\n"
+        "  window.dataLayer = window.dataLayer || [];\n"
+        "  function gtag(){dataLayer.push(arguments);}\n"
+        "  gtag('js', new Date());\n"
+        "\n"
+        f"  gtag('config', '{mid}');\n"
+        "</script>"
+    )
+
+
 def base_context(config, title, meta_desc, canonical_path, og_type="website", head_extra="", body_class=""):
     base = config["base_url"].rstrip("/")
     canonical = base + canonical_path
@@ -363,6 +381,7 @@ def base_context(config, title, meta_desc, canonical_path, og_type="website", he
         "body_class": body_class,
         "skip_target": "content",
         "footer_about": f"{config['name']} — {config['tagline']}",
+        "ga4_tag": build_ga4_tag(config),
     }
 
 
@@ -599,6 +618,73 @@ def build_related_symbols(s, sym_by_id):
 group_symbols = {}
 
 
+def fit_symbol_title(s, limit=60):
+    """Title <= 60 chars, never cut mid-word, always ending with the unique
+    Unicode codepoint so no two symbols can collide after trimming."""
+    name, glyph, uni = s["name"], s["glyph"], s["unicode"]
+    code = None
+    if s.get("alt_legacy"):
+        code = "Alt+" + s["alt_legacy"][0]
+    elif s.get("alt_decimal"):
+        code = "Alt+" + s["alt_decimal"]
+    cands = []
+    if code:
+        cands.append(f"{name} {glyph} Alt Code ({code}) & Unicode {uni}")
+        cands.append(f"{name} {glyph} Alt Code ({code})")
+    cands.append(f"{name} {glyph} & Unicode {uni}")
+    cands.append(f"{name} & Unicode {uni}")
+    cands.append(f"{name} {uni}")
+    for c in cands:
+        if len(c) <= limit:
+            return c
+    tail = " " + uni
+    room = limit - len(tail)
+    trimmed = name[:room].rsplit(" ", 1)[0].rstrip(" ,-") if room > 1 else ""
+    return ((trimmed or name[:max(room, 1)]) + tail)[:limit].rstrip()
+
+
+def build_symbol_desc(s):
+    """Meta description, 120-160 chars, claiming only codes the symbol HAS."""
+    name, glyph, uni = s["name"], s["glyph"], s["unicode"]
+    block, cat = s["block"], s["category"]
+    have = []
+    if s.get("alt_legacy"):
+        have.append("Alt code " + "/".join(s["alt_legacy"]))
+    elif s.get("alt_decimal"):
+        have.append("Alt+" + s["alt_decimal"])
+    if s.get("mac_option"):
+        have.append("macOS " + s["mac_option"])
+    if s["entity"].get("named"):
+        have.append(s["entity"]["named"])
+    codes = ", ".join(have) if have else "no legacy Alt code"
+    bases = [
+        f"{name} {glyph}: {uni}, {codes}.",
+        f"{name} {glyph} ({uni}, {codes}).",
+        f"{name} {glyph} ({uni}).",
+        f"{glyph} {uni}.",
+    ]
+    pads = [
+        " Copy the character or its code for Windows, macOS, HTML, CSS, Python and JavaScript, with the keystrokes for each platform.",
+        " Copy the character or its code for Windows, macOS, HTML, CSS, Python and JavaScript.",
+        " Copy the character or its code for HTML, CSS, Python and JavaScript.",
+        f" Unicode block {block}, category {cat}. Copy the character or its code.",
+        f" Unicode block {block}. Copy the character or its code.",
+        " Copy the character or its code.",
+        "",
+    ]
+    allc = [b + p for b in bases for p in pads]
+    for c in allc:
+        if 120 <= len(c) <= 160:
+            return c
+    allc.sort(key=lambda c: (abs(140 - len(c)), len(c)))
+    best = allc[0]
+    if len(best) > 160:
+        best = best[:157].rsplit(" ", 1)[0].rstrip(" ,.") + "."
+    while len(best) < 120:
+        best = best.rstrip(".") + f" Unicode block {block}."
+    return best
+
+
 def build_symbol_page(s, sym_by_id, groups, config, build_date):
     related = build_related_symbols(s, sym_by_id)
     group = None
@@ -614,18 +700,8 @@ def build_symbol_page(s, sym_by_id, groups, config, build_date):
                 break
 
     h1 = f"{s['name']} Symbol" if not s.get("alt_legacy") else f"{s['name']} Alt Code and Symbol"
-    title_base = f"{s['name']} {s['glyph']}"
-    if s.get("alt_legacy"):
-        title = f"{title_base} Alt Code (Alt+{s['alt_legacy'][0]}) and Unicode {s['unicode']}"
-    elif s.get("alt_decimal"):
-        title = f"{title_base} Alt Code (Alt+{s['alt_decimal']}) and Unicode {s['unicode']}"
-    else:
-        title = f"{title_base} Symbol and Unicode {s['unicode']}"
-    title = title[:60].rstrip()
-
-    desc = f"Alt code, Unicode codepoint {s['unicode']}, HTML entity and macOS Option shortcut for {s['name']} {s['glyph']}. Includes copy values for Windows, macOS, HTML, CSS, Python and JavaScript."
-    if len(desc) > 160:
-        desc = desc[:157].rstrip() + "..."
+    title = fit_symbol_title(s)
+    desc = build_symbol_desc(s)
 
     base = config["base_url"].rstrip("/")
     url = base + symbol_url(s)
@@ -903,6 +979,71 @@ def ordered_guides():
     out = [by_slug[s] for s in GUIDE_ORDER if s in by_slug]
     out += [g for g in guides_global if g["slug"] not in GUIDE_ORDER]
     return out
+
+
+def build_all_symbols_page(config, symbols, build_date):
+    """Every symbol on one statically-linked page, grouped by Unicode block.
+    Symbols that belong to no curated group have no other inbound <a>, so without
+    this hub they are reachable only through the JavaScript search."""
+    base = config["base_url"].rstrip("/")
+    url = base + "/all-symbols/"
+    by_block = {}
+    for s in symbols:
+        by_block.setdefault(s["block"], []).append(s)
+    order = sorted(by_block, key=lambda b: min(x["codepoint"] for x in by_block[b]))
+    used = {}
+    jump, sections = [], []
+    for b in order:
+        slug = slugify(b)
+        used[slug] = used.get(slug, 0) + 1
+        if used[slug] > 1:
+            slug = f"{slug}-{used[slug]}"
+        members = sorted(by_block[b], key=lambda x: x["codepoint"])
+        jump.append(f'<a href="#{slug}">{html_esc(b)} ({len(members)})</a>')
+        tiles = "\n".join(symbol_link_tile(x) for x in members)
+        sections.append(
+            f'<section class="block-section" aria-labelledby="{slug}">\n'
+            f'  <h2 id="{slug}">{html_esc(b)} <span class="count">{len(members)}</span></h2>\n'
+            f'  <div class="symbol-grid small">\n{tiles}\n  </div>\n'
+            f"</section>"
+        )
+    title = f"All {len(symbols):,} Unicode Symbols and Alt Codes"
+    desc = (f"The complete list of all {len(symbols):,} symbols on AltKeyCodes, grouped by Unicode "
+            "block, each with its Alt code, HTML entity, CSS escape and macOS shortcut.")
+    assert len(title) <= 60 and 120 <= len(desc) <= 160, (len(title), len(desc))
+    graph = [
+        {"@type": "WebSite", "@id": base + "/#website", "url": base + "/", "name": config["name"],
+         "potentialAction": {"@type": "SearchAction",
+                             "target": {"@type": "EntryPoint", "urlTemplate": base + "/?q={search_term_string}"},
+                             "query-input": "required name=search_term_string"}},
+        {"@type": "Organization", "@id": base + "/#organization", "name": config["legal_name"], "url": base + "/"},
+        {"@type": "BreadcrumbList", "@id": url + "#breadcrumb", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": base + "/"},
+            {"@type": "ListItem", "position": 2, "name": "Symbols", "item": base + "/symbols/"},
+            {"@type": "ListItem", "position": 3, "name": "All symbols", "item": url}]},
+        {"@type": "CollectionPage", "@id": url + "#collection", "url": url,
+         "name": f"All {len(symbols):,} symbols", "description": desc},
+        {"@type": "ItemList", "@id": url + "#items", "itemListElement": [
+            {"@type": "ListItem", "position": i + 1, "name": x["name"], "item": base + symbol_url(x)}
+            for i, x in enumerate(symbols)]},
+    ]
+    ctx = base_context(config, title, desc, "/all-symbols/", og_type="website",
+                       head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
+                       body_class="all-symbols-page")
+    ctx.update({
+        "h1": f"All {len(symbols):,} symbols",
+        "tagline": f"Every symbol in the reference, grouped by the {len(order)} Unicode blocks it comes from.",
+        "answer_block": (f"This page lists all {len(symbols):,} symbols in the AltKeyCodes reference, grouped by "
+                         "Unicode block. Each entry links to a page with its Alt code, Unicode codepoint, HTML "
+                         "entity, CSS escape and macOS Option shortcut. Use the search box for a name, alias or "
+                         "code, or jump to a block below."),
+        "block_jump": "\n".join(jump),
+        "blocks_html": "\n".join(sections),
+        "symbol_total": len(symbols),
+        "block_total": len(order),
+    })
+    ctx["content"] = render(load_text(TEMPLATES / "all-symbols.html"), ctx)
+    return ctx
 
 
 def build_guides_index_page(config, build_date):
@@ -1299,6 +1440,7 @@ def write_llms(config, guides):
         "",
         f"- [Home]({base}/): Search every symbol by name, alias, glyph or code.",
         f"- [All symbol groups]({base}/symbols/): Browse 33 curated groups.",
+        f"- [All symbols]({base}/all-symbols/): Every symbol, grouped by Unicode block.",
         f"- [Legacy Alt codes]({base}/legacy-alt-codes/): Full 0–255 OEM 437 / Windows-1252 table.",
         f"- [All how-to guides]({base}/how-to/): Every guide to typing symbols on Windows, macOS, HTML and in code.",
     ]
@@ -1398,7 +1540,7 @@ def main():
     copy_assets()
 
     pages_html = {}
-    counts = {"home": 0, "group": 0, "symbol": 0, "table": 0, "guide": 0, "guides_index": 0, "symbols_index": 0, "notfound": 0}
+    counts = {"home": 0, "group": 0, "symbol": 0, "table": 0, "guide": 0, "guides_index": 0, "all_symbols": 0, "symbols_index": 0, "notfound": 0}
 
     # Home
     home_ctx = build_home_page(config, symbols, build_date)
@@ -1422,9 +1564,11 @@ def main():
         pages_html[group_url(g) + "index.html"] = ghtml
         counts["group"] += 1
 
-    # Symbols
-    popular = [s for s in symbols if is_popular(s)]
-    for s in popular:
+    # Symbols — a page for EVERY symbol, not just a "popular" subset.
+    # Every tile in the search results, the group pages and the related lists is a
+    # clickable <button data-href="/symbol/<id>-<slug>/"> that app.js navigates to,
+    # so generating only the popular ones left ~1,843 tiles pointing at a 404.
+    for s in symbols:
         sctx = build_symbol_page(s, sym_by_id, groups, config, build_date)
         spage = render(load_text(TEMPLATES / "base.html"), sctx)
         write_file(DIST / "symbol" / f"{s['id']}-{slugify(s['name'])}" / "index.html", spage)
@@ -1445,6 +1589,13 @@ def main():
         write_file(DIST / "how-to" / g["slug"] / "index.html", gpage)
         pages_html[guide_url(g) + "index.html"] = gpage
         counts["guide"] += 1
+    # All-symbols index — every page gets a static inbound link from this hub
+    as_ctx = build_all_symbols_page(config, symbols, build_date)
+    as_html = render(load_text(TEMPLATES / "base.html"), as_ctx)
+    write_file(DIST / "all-symbols" / "index.html", as_html)
+    pages_html["/all-symbols/index.html"] = as_html
+    counts["all_symbols"] += 1
+
     # Guides index (/how-to/) — the breadcrumb target for every guide
     gi_ctx = build_guides_index_page(config, build_date)
     gi_html = render(load_text(TEMPLATES / "base.html"), gi_ctx)
@@ -1484,6 +1635,8 @@ def main():
     print(f"  Legacy table:{counts['table']}")
     print(f"  Guides:      {counts['guide']}")
     print(f"  How-to index:{counts['guides_index']}")
+    print(f"  All symbols: {counts['all_symbols']}")
+    print(f"  Symbol pages:{counts['symbol']}")
     print(f"  404:         {counts['notfound']}")
     print(f"  Total HTML:  {sum(counts.values())}")
     print(f"  Total bytes: {total_bytes}")

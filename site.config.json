@@ -13,6 +13,7 @@
   "home_symbol_preview": 240,
   "symbol_page_min_weight": 40,
   "og_image": "",
-  "analytics": "none",
-  "ads": false
+  "analytics": "GA4",
+  "ads": false,
+  "ga4_measurement_id": "G-Y06BYKYVG2"
 }

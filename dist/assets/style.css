@@ -156,3 +156,11 @@ pre code{background:transparent;padding:0;}
   th,td{padding:8px;font-size:.875rem;}
   .filter-row{gap:8px 12px;}
 }
+
+/* All-symbols hub: block jump nav and block sections */
+.block-jump{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:20px;}
+.block-jump a{font-size:.8rem;color:var(--fg-muted);text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:2px 8px;}
+.block-jump a:hover{color:var(--fg);border-color:var(--border-strong);background:var(--bg-muted);}
+.block-section{margin-top:clamp(28px,3vw,40px);}
+.block-section h2{display:flex;align-items:baseline;gap:8px;}
+.block-section h2 .count{font-size:.8rem;font-weight:500;color:var(--fg-subtle);}
