@@ -106,6 +106,13 @@ The build encodes the awkward truths rather than hiding them:
 - Content is server-rendered, so crawlers that do not execute JavaScript still see it. The
   1.1 MB search index is fetched only when the search box is focused, not on page load.
 
+## Deploy
+
+Cloudflare Pages watches `main` on this repo and serves `dist/`. Pushing to `main` is the
+deploy: the live site reflects the new `dist/` within about a minute. There is no separate
+upload step, so `dist/` must be committed with any source change — a commit that only touches
+`build.py` ships nothing.
+
 ## Verification
 
 `build.py` self-checks its own output (including an orphan-page reachability walk) and
