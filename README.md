@@ -14,12 +14,13 @@ Alt codes. This project is a static, ad-free replacement:
 
 | | alt-codes.net | AltKeyCodes |
 |---|---|---|
-| Pages | 96 | 253 |
-| JSON-LD nodes | 0 | 6,800+ across 18 types |
+| Pages generated | 96 | 2,106 (2,054 HTML + sitemap/robots/llms) |
+| Pages offered to search | 96 | 254 (209 symbols, 33 groups, 7 guides, 5 hubs) |
+| JSON-LD nodes | 0 | 12,588 across 9 types |
 | Symbols in raw HTML | 255-row table repeated on every page | 240 tiles server-rendered on the home page |
 | Input methods | Windows legacy Alt only | 9, each with its real limits documented |
 | JavaScript required for content | — | No. JS is progressive enhancement only |
-| Third-party scripts | Ad network | None |
+| Third-party scripts | Ad network | GA4 only |
 
 ## Quick start
 
@@ -81,14 +82,29 @@ The build encodes the awkward truths rather than hiding them:
 
 - Every page: one canonical (trailing slash), a unique title under 60 characters, a unique
   description of 120–160 characters, exactly one `h1`, and a parseable JSON-LD `@graph`.
-- Structured data covers `WebSite` + `SearchAction`, `DefinedTerm`, `DefinedTermSet`,
-  `FAQPage` (1,044 Q&As), `HowTo` (794 steps), `Article`, `ItemList`, `BreadcrumbList`.
+- Structured data covers `WebSite` + `SearchAction`, `Organization`, `BreadcrumbList`,
+  `WebPage`, `DefinedTerm`, `FAQPage`, `Article`, `CollectionPage` and `ItemList`.
+  `HowTo` was removed: Google retired HowTo rich results in 2023, so it was dead weight.
+- **Indexation policy.** A page is generated for all 2,052 symbols so no tile 404s, but only
+  pages that can answer a real query are offered to search engines: `weight >=
+  symbol_page_min_weight` (40) or a macOS Option shortcut — 209 pages. The other 1,843 ship
+  as `noindex,follow`, stay internally linked for users and AI crawlers, and are excluded
+  from the sitemap. Change `symbol_page_min_weight` in `site.config.json` to widen or
+  narrow the set; `0` indexes everything.
+- **Sitemap.** 254 URLs, each with its own `lastmod` taken from a content-hash registry
+  (`data/lastmod.json`). A rebuild with no content change leaves every date untouched
+  instead of stamping 2,000 URLs with today.
+- **Pagination.** `/all-symbols/` is split into 9 pages of 250 symbols with `rel=prev/next`.
+  It used to be a single 920 KB page carrying 2,066 links.
+- **Open Graph.** Every page emits `og:image` (1200×630), one card per symbol group, so
+  shares and link previews render a real image rather than a blank box.
 - `robots.txt` names 19 AI crawlers explicitly, separating search citability
   (`OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`) from training access (`GPTBot`,
   `ClaudeBot`, `CCBot`, `Applebot-Extended`).
 - `llms.txt` is included for non-Google systems. It carries no ranking weight in Google
-  Search and is not claimed to.
-- Content is server-rendered, so crawlers that do not execute JavaScript still see it.
+  Search and is not claimed to; no crawler requires it.
+- Content is server-rendered, so crawlers that do not execute JavaScript still see it. The
+  1.1 MB search index is fetched only when the search box is focused, not on page load.
 
 ## Verification
 

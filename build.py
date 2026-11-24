@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Static site generator for AltKeyCodes. Python 3 standard library only."""
+import hashlib
 import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 from datetime import date, datetime
 from html import escape
@@ -15,6 +17,10 @@ TEMPLATES = ROOT / "templates"
 ASSETS = ROOT / "assets"
 DATA = ROOT / "data"
 CONTENT = ROOT / "content" / "guides"
+# Persisted "when did this page's content last actually change" registry.
+# A rebuild must NOT bump every lastmod: search engines discount sites whose
+# whole sitemap refreshes daily with no content change.
+STAMP_FILE = DATA / "lastmod.json"
 
 
 def load_json(path):
@@ -321,6 +327,88 @@ def is_popular(s):
 
 
 # ---------------------------------------------------------------------------
+# Indexation policy and per-page change stamps
+# ---------------------------------------------------------------------------
+
+# A page for every symbol is generated so no tile ever 404s, but only the ones
+# that can answer a real query are offered to search engines. 90% of the set
+# (1,843 URLs) sits below this floor and/or has no typing method to teach; those
+# pages ship as noindex,follow, stay linked for users, and are kept out of the
+# sitemap. Raising or lowering `symbol_page_min_weight` in site.config.json is
+# the only change needed to widen or narrow the indexed set.
+STAMPS = {}
+PAGE_STAMPS = {}
+
+
+def is_indexable(s, config):
+    floor = int(config.get("symbol_page_min_weight", 40))
+    if floor <= 0:
+        return True
+    if s.get("weight", 0) >= floor:
+        return True
+    if config.get("index_symbols_with_mac_option", True) and s.get("mac_option"):
+        return True
+    return False
+
+
+def load_stamps():
+    try:
+        data = json.loads(STAMP_FILE.read_text("utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def save_stamps(stamps):
+    STAMP_FILE.write_text(json.dumps(stamps, indent=1, sort_keys=True) + "\n", "utf-8")
+
+
+def stamp_for(key, *parts, build_date=None, default_date=None):
+    """Return the ISO date this page's inputs last changed.
+
+    The hash covers everything that changes the output (template, data, shared
+    shell). Unchanged inputs keep their original date across rebuilds, so the
+    sitemap only reports real edits. `default_date` is used the first time a key
+    is seen (seeded from the source file's git date, not from "today").
+    """
+    payload = "\x1f".join(str(p) for p in parts)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+    entry = STAMPS.get(key)
+    if entry is None:
+        entry = {"hash": digest, "date": default_date or build_date or date.today().isoformat()}
+        STAMPS[key] = entry
+    elif entry.get("hash") != digest:
+        entry = {"hash": digest, "date": build_date or date.today().isoformat()}
+        STAMPS[key] = entry
+    PAGE_STAMPS[key] = entry["date"]
+    return entry["date"]
+
+
+def git_date(relpath, fallback):
+    """Last commit date of a source path, so a first build can seed honest
+    lastmod values instead of stamping every URL with the build date."""
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "log", "-1", "--format=%cs", "--", relpath],
+            capture_output=True, text=True, timeout=10,
+        )
+        value = out.stdout.strip()
+        return value if re.match(r"^\d{4}-\d{2}-\d{2}$", value) else fallback
+    except Exception:
+        return fallback
+
+
+
+def config_fingerprint(config):
+    return json.dumps({k: config.get(k) for k in sorted(config)}, sort_keys=True)
+
+
+def shell_fingerprint():
+    return load_text(TEMPLATES / "base.html")
+
+
+
+# ---------------------------------------------------------------------------
 # Legacy code page helpers
 # ---------------------------------------------------------------------------
 
@@ -372,26 +460,54 @@ def build_ga4_tag(config):
     )
 
 
-def base_context(config, title, meta_desc, canonical_path, og_type="website", head_extra="", body_class=""):
+def og_image_tags(config, path):
+    """Open Graph/Twitter image tags. Absolute URL, explicit dimensions and alt
+    text: without these every share of the site rendered a blank card."""
+    if not path:
+        return ""
+    base = config["base_url"].rstrip("/")
+    url = base + path
+    w = config.get("og_image_width", 1200)
+    h = config.get("og_image_height", 630)
+    return (
+        f'<meta property="og:image" content="{url}">\n'
+        f'<meta property="og:image:width" content="{w}">\n'
+        f'<meta property="og:image:height" content="{h}">\n'
+        f'<meta property="og:image:type" content="image/png">\n'
+        f'<meta property="og:image:alt" content="{html_esc(config["name"])} — {html_esc(config.get("tagline", ""))}">\n'
+        f'<meta name="twitter:image" content="{url}">'
+    )
+
+
+INDEX_ROBOTS = "index,follow,max-snippet:-1,max-image-preview:large"
+NOINDEX_ROBOTS = "noindex,follow,max-snippet:-1,max-image-preview:large"
+
+
+def base_context(config, title, meta_desc, canonical_path, og_type="website", head_extra="", body_class="",
+                 robots=None, og_image=None):
     base = config["base_url"].rstrip("/")
     canonical = base + canonical_path
+    image = og_image if og_image is not None else config.get("og_image", "")
     return {
         "lang": config.get("language", "en"),
         "title": title,
         "meta_desc": meta_desc,
         "canonical": canonical,
+        "robots": robots or INDEX_ROBOTS,
         "og_type": og_type,
         "og_title": title,
         "og_desc": meta_desc,
         "og_url": canonical,
         "og_site_name": config["name"],
-        "og_image": config.get("og_image", ""),
+        "og_image": image,
+        "og_image_tags": og_image_tags(config, image),
         "head_extra": head_extra,
         "body_class": body_class,
         "skip_target": "content",
         "footer_about": f"{config['name']} — {config['tagline']}",
         "ga4_tag": build_ga4_tag(config),
     }
+
 
 
 def build_answer_block(s, config):
@@ -620,6 +736,21 @@ def build_related_symbols(s, sym_by_id):
             if rel and is_popular(rel):
                 related.append(rel)
     related.sort(key=lambda x: (-x.get("weight", 0), x["codepoint"]))
+
+    # Symbols that belong to no curated group (121 of them) would otherwise be
+    # linked only from their hub, which left 18 indexable pages at 2 inbound
+    # links. Every page therefore also links to its nearest indexable neighbours
+    # in the same block, first in the list. Nearest-neighbour relations are
+    # mutual, so this is a codepoint ring: links go out and come back, and no
+    # indexable page is left reachable only from its hub.
+    neighbours = [
+        x for x in sym_by_id.values()
+        if x["id"] != s["id"] and is_popular(x)
+    ]
+    neighbours.sort(key=lambda x: (x["block"] != s["block"], abs(x["codepoint"] - s["codepoint"]), x["codepoint"]))
+    neighbours = neighbours[:6]
+    seen.update(x["id"] for x in neighbours)
+    related = neighbours + [x for x in related if x["id"] not in {n["id"] for n in neighbours}]
     return related[:18]
 
 
@@ -694,7 +825,7 @@ def build_symbol_desc(s):
     return best
 
 
-def build_symbol_page(s, sym_by_id, groups, config, build_date):
+def build_symbol_page(s, sym_by_id, groups, config, build_date, source_date=None):
     related = build_related_symbols(s, sym_by_id)
     group = None
     group_name = "Symbols"
@@ -768,20 +899,32 @@ def build_symbol_page(s, sym_by_id, groups, config, build_date):
     if faq_items:
         graph.append({"@type": "FAQPage", "@id": url + "#faq", "mainEntity": faq_items})
 
-    steps = []
-    for idx, line in enumerate(re.findall(r"<li>(.*?)</li>", build_windows_steps(s), re.S), start=1):
-        text = re.sub(r"<[^>]+>", "", line)
-        steps.append({"@type": "HowToStep", "position": idx, "text": text})
-    if steps:
-        graph.append({
-            "@type": "HowTo",
-            "@id": url + "#howto",
-            "name": f"How to type {s['name']} on Windows",
-            "totalTime": "PT1M",
-            "step": steps,
-        })
+    # HowTo markup used to be emitted here. Google retired HowTo rich results in
+    # 2023, so it was ~600 bytes of dead JSON per page; the visible numbered
+    # steps stay, the schema node does not.
 
-    ctx = base_context(config, title, desc, symbol_url(s), og_type="article", head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}), body_class="symbol-page")
+    indexable = is_indexable(s, config)
+    group_slug = s["groups"][0] if s.get("groups") else ""
+    og_path = f"/assets/og/group-{group_slug}.png"
+    if not group_slug or not (ASSETS / "og" / f"group-{group_slug}.png").exists():
+        og_path = config.get("og_image", "")
+    stamp = stamp_for(
+        symbol_url(s),
+        shell_fingerprint(),
+        load_text(TEMPLATES / "symbol.html"),
+        json.dumps(s, sort_keys=True, ensure_ascii=False),
+        config_fingerprint(config),
+        build_date=build_date,
+        default_date=source_date,
+    )
+
+    ctx = base_context(
+        config, title, desc, symbol_url(s), og_type="article",
+        head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
+        body_class="symbol-page",
+        robots=INDEX_ROBOTS if indexable else NOINDEX_ROBOTS,
+        og_image=og_path,
+    )
     ctx.update({
         "h1": h1,
         "symbol_name": s["name"],
@@ -799,7 +942,8 @@ def build_symbol_page(s, sym_by_id, groups, config, build_date):
         "faq": faq_html,
         "prev_next": build_prev_next(s, group, sym_by_id),
         "published": build_date,
-        "updated": build_date,
+        "updated": stamp,
+        "indexable": indexable,
     })
     ctx["content"] = render(load_text(TEMPLATES / "symbol.html"), ctx)
     return ctx
@@ -828,7 +972,7 @@ def build_prev_next(s, group, sym_by_id):
     return "\n".join(links)
 
 
-def build_group_page(g, sym_by_id, config, build_date):
+def build_group_page(g, sym_by_id, config, build_date, source_date=None):
     members = [sym_by_id[sid] for sid in g["symbols"] if sid in sym_by_id]
     members.sort(key=lambda x: (-x.get("weight", 0), x["codepoint"]))
     tiles = "\n".join(symbol_link_tile(s) if is_popular(s) else symbol_tile(s) for s in members)
@@ -883,7 +1027,10 @@ def build_group_page(g, sym_by_id, config, build_date):
             ],
         },
     ]
-    ctx = base_context(config, title, desc, group_url(g), og_type="website", head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}), body_class="group-page")
+    ctx = base_context(config, title, desc, group_url(g), og_type="website",
+                       head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
+                       body_class="group-page",
+                       og_image=f"/assets/og/group-{g['slug']}.png" if (ASSETS / "og" / f"group-{g['slug']}.png").exists() else config.get("og_image", ""))
     ctx.update({
         "h1": g["name"],
         "tagline": g["tagline"],
@@ -892,6 +1039,9 @@ def build_group_page(g, sym_by_id, config, build_date):
         "answer_block": f"Use the {g['name'].lower()} reference below to copy any symbol, its Alt code, Unicode codepoint, HTML entity and macOS shortcut.",
         "symbols": tiles,
         "sibling_groups": build_sibling_groups(g, config),
+        "updated": stamp_for(group_url(g), shell_fingerprint(), load_text(TEMPLATES / "group.html"),
+                             json.dumps(g, sort_keys=True, ensure_ascii=False), config_fingerprint(config),
+                             build_date=build_date, default_date=source_date),
     })
     ctx["content"] = render(load_text(TEMPLATES / "group.html"), ctx)
     return ctx
@@ -989,69 +1139,143 @@ def ordered_guides():
     return out
 
 
-def build_all_symbols_page(config, symbols, build_date):
-    """Every symbol on one statically-linked page, grouped by Unicode block.
-    Symbols that belong to no curated group have no other inbound <a>, so without
-    this hub they are reachable only through the JavaScript search."""
+ALL_SYMBOLS_PER_PAGE = 250
+
+
+def _fit_desc(text):
+    if len(text) < 120:
+        text = (text + " Copy any Alt code, entity or escape in one click.")[:160].rstrip()
+    if len(text) > 160:
+        text = text[:157].rsplit(" ", 1)[0].rstrip(" ,.") + "."
+    return text
+
+
+def build_all_symbols_pages(config, symbols, build_date, source_date=None):
+    """Every symbol is reachable statically, but paginated.
+
+    This used to be one 920 KB page carrying 2,066 links: a crawl-budget sink and
+    a mobile rendering cost, because a crawler spends the same budget on one URL
+    that it would spread over ten. 250 symbols per page keeps each page near
+    120 KB, every tile at most two clicks deep, and puts a real prev/next chain
+    between them.
+    """
     base = config["base_url"].rstrip("/")
-    url = base + "/all-symbols/"
     by_block = {}
     for s in symbols:
         by_block.setdefault(s["block"], []).append(s)
-    order = sorted(by_block, key=lambda b: min(x["codepoint"] for x in by_block[b]))
-    used = {}
-    jump, sections = [], []
-    for b in order:
-        slug = slugify(b)
-        used[slug] = used.get(slug, 0) + 1
-        if used[slug] > 1:
-            slug = f"{slug}-{used[slug]}"
-        members = sorted(by_block[b], key=lambda x: x["codepoint"])
-        jump.append(f'<a href="#{slug}">{html_esc(b)} ({len(members)})</a>')
-        tiles = "\n".join(symbol_link_tile(x) for x in members)
-        sections.append(
-            f'<section class="block-section" aria-labelledby="{slug}">\n'
-            f'  <h2 id="{slug}">{html_esc(b)} <span class="count">{len(members)}</span></h2>\n'
-            f'  <div class="symbol-grid small">\n{tiles}\n  </div>\n'
-            f"</section>"
-        )
-    title = f"All {len(symbols):,} Unicode Symbols and Alt Codes"
-    desc = (f"The complete list of all {len(symbols):,} symbols on AltKeyCodes, grouped by Unicode "
-            "block, each with its Alt code, HTML entity, CSS escape and macOS shortcut.")
-    assert len(title) <= 60 and 120 <= len(desc) <= 160, (len(title), len(desc))
-    graph = [
-        {"@type": "WebSite", "@id": base + "/#website", "url": base + "/", "name": config["name"],
-         "potentialAction": {"@type": "SearchAction",
-                             "target": {"@type": "EntryPoint", "urlTemplate": base + "/?q={search_term_string}"},
-                             "query-input": "required name=search_term_string"}},
-        {"@type": "Organization", "@id": base + "/#organization", "name": config["legal_name"], "url": base + "/"},
-        {"@type": "BreadcrumbList", "@id": url + "#breadcrumb", "itemListElement": [
+    block_order = sorted(by_block, key=lambda b: min(x["codepoint"] for x in by_block[b]))
+    ordered = [s for b in block_order for s in sorted(by_block[b], key=lambda x: x["codepoint"])]
+    total = len(ordered)
+    page_count = max(1, -(-total // ALL_SYMBOLS_PER_PAGE))
+    pages = []
+
+    for page_no in range(1, page_count + 1):
+        start = (page_no - 1) * ALL_SYMBOLS_PER_PAGE
+        chunk = ordered[start:start + ALL_SYMBOLS_PER_PAGE]
+        path = "/all-symbols/" if page_no == 1 else f"/all-symbols/{page_no}/"
+        url = base + path
+
+        used = {}
+        jump, sections = [], []
+        for b in block_order:
+            members = [x for x in chunk if x["block"] == b]
+            if not members:
+                continue
+            slug = slugify(b)
+            used[slug] = used.get(slug, 0) + 1
+            if used[slug] > 1:
+                slug = f"{slug}-{used[slug]}"
+            jump.append(f'<a href="#{slug}">{html_esc(b)} ({len(members)})</a>')
+            tiles = "\n".join(symbol_link_tile(x) for x in members)
+            sections.append(
+                f'<section class="block-section" aria-labelledby="{slug}">\n'
+                f'  <h2 id="{slug}">{html_esc(b)} <span class="count">{len(members)}</span></h2>\n'
+                f'  <div class="symbol-grid small">\n{tiles}\n  </div>\n'
+                f"</section>"
+            )
+
+        if page_no == 1:
+            title = f"All {total:,} Unicode Symbols and Alt Codes"
+            desc = _fit_desc(
+                f"The complete list of all {total:,} symbols on AltKeyCodes, grouped by Unicode "
+                "block, each with its Alt code, HTML entity, CSS escape and macOS shortcut."
+            )
+            h1 = f"All {total:,} symbols"
+            tagline = f"Every symbol in the reference, grouped by the {len(block_order)} Unicode blocks it comes from."
+        else:
+            title = f"All symbols, page {page_no} of {page_count}: Alt codes"
+            desc = _fit_desc(
+                f"Symbols {start + 1:,}–{start + len(chunk):,} of {total:,}, grouped by Unicode block, "
+                "each with its Alt code, Unicode codepoint, HTML entity, CSS escape and macOS shortcut."
+            )
+            h1 = f"All {total:,} symbols — page {page_no}"
+            tagline = f"Symbols {start + 1:,}–{start + len(chunk):,} of {total:,}, grouped by Unicode block."
+
+        pager = []
+        if page_no > 1:
+            prev_path = "/all-symbols/" if page_no == 2 else f"/all-symbols/{page_no - 1}/"
+            pager.append(f'<a class="btn secondary" rel="prev" href="{prev_path}">← Previous</a>')
+        pager.append(f'<span class="pager-status">Page {page_no} of {page_count}</span>')
+        if page_no < page_count:
+            pager.append(f'<a class="btn secondary" rel="next" href="/all-symbols/{page_no + 1}/">Next →</a>')
+
+        breadcrumb = [
             {"@type": "ListItem", "position": 1, "name": "Home", "item": base + "/"},
             {"@type": "ListItem", "position": 2, "name": "Symbols", "item": base + "/symbols/"},
-            {"@type": "ListItem", "position": 3, "name": "All symbols", "item": url}]},
-        {"@type": "CollectionPage", "@id": url + "#collection", "url": url,
-         "name": f"All {len(symbols):,} symbols", "description": desc},
-        {"@type": "ItemList", "@id": url + "#items", "itemListElement": [
-            {"@type": "ListItem", "position": i + 1, "name": x["name"], "item": base + symbol_url(x)}
-            for i, x in enumerate(symbols)]},
-    ]
-    ctx = base_context(config, title, desc, "/all-symbols/", og_type="website",
-                       head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
-                       body_class="all-symbols-page")
-    ctx.update({
-        "h1": f"All {len(symbols):,} symbols",
-        "tagline": f"Every symbol in the reference, grouped by the {len(order)} Unicode blocks it comes from.",
-        "answer_block": (f"This page lists all {len(symbols):,} symbols in the AltKeyCodes reference, grouped by "
-                         "Unicode block. Each entry links to a page with its Alt code, Unicode codepoint, HTML "
-                         "entity, CSS escape and macOS Option shortcut. Use the search box for a name, alias or "
-                         "code, or jump to a block below."),
-        "block_jump": "\n".join(jump),
-        "blocks_html": "\n".join(sections),
-        "symbol_total": len(symbols),
-        "block_total": len(order),
-    })
-    ctx["content"] = render(load_text(TEMPLATES / "all-symbols.html"), ctx)
-    return ctx
+            {"@type": "ListItem", "position": 3, "name": "All symbols", "item": base + "/all-symbols/"},
+        ]
+        if page_no > 1:
+            breadcrumb.append({"@type": "ListItem", "position": 4, "name": f"Page {page_no}", "item": url})
+
+        graph = [
+            {"@type": "WebSite", "@id": base + "/#website", "url": base + "/", "name": config["name"],
+             "potentialAction": {"@type": "SearchAction",
+                                 "target": {"@type": "EntryPoint", "urlTemplate": base + "/?q={search_term_string}"},
+                                 "query-input": "required name=search_term_string"}},
+            {"@type": "Organization", "@id": base + "/#organization", "name": config["legal_name"], "url": base + "/"},
+            {"@type": "BreadcrumbList", "@id": url + "#breadcrumb", "itemListElement": breadcrumb},
+            {"@type": "CollectionPage", "@id": url + "#collection", "url": url,
+             "name": h1, "description": desc},
+            {"@type": "ItemList", "@id": url + "#items", "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": x["name"], "item": base + symbol_url(x)}
+                for i, x in enumerate(chunk)]},
+        ]
+        if page_no > 1:
+            graph.append({"@type": "ItemList", "@id": url + "#pagination", "itemListElement": [
+                {"@type": "ListItem", "position": p,
+                 "item": base + ("/all-symbols/" if p == 1 else f"/all-symbols/{p}/")}
+                for p in range(1, page_count + 1)]})
+
+        ctx = base_context(
+            config, title[:60], desc, path, og_type="website",
+            head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
+            body_class="all-symbols-page",
+            robots=INDEX_ROBOTS if page_no == 1 else NOINDEX_ROBOTS,
+        )
+        ctx.update({
+            "h1": h1,
+            "tagline": tagline,
+            "answer_block": (
+                f"This page lists symbols {start + 1:,}–{start + len(chunk):,} of {total:,} in the AltKeyCodes "
+                "reference, grouped by Unicode block. Each entry links to a page with its Alt code, Unicode "
+                "codepoint, HTML entity, CSS escape and macOS Option shortcut."
+            ),
+            "block_jump": "\n".join(jump),
+            "blocks_html": "\n".join(sections),
+            "pager": "\n".join(pager),
+            "symbol_total": total,
+            "block_total": len(block_order),
+            "page_no": page_no,
+            "page_total": page_count,
+            "updated": stamp_for(
+                path, shell_fingerprint(), load_text(TEMPLATES / "all-symbols.html"),
+                ",".join(x["id"] for x in chunk), config_fingerprint(config),
+                build_date=build_date, default_date=source_date,
+            ),
+        })
+        ctx["content"] = render(load_text(TEMPLATES / "all-symbols.html"), ctx)
+        pages.append({"path": path, "ctx": ctx})
+    return pages
 
 
 def build_guides_index_page(config, build_date):
@@ -1286,7 +1510,7 @@ def build_legacy_table_page(config, build_date):
     return ctx
 
 
-def build_guide_page(g, config, build_date):
+def build_guide_page(g, config, build_date, source_date=None):
     title = g["title"][:60].rstrip()
     desc = g["description"]
     # Account for HTML-escaping of & in the source description
@@ -1348,13 +1572,27 @@ def build_guide_page(g, config, build_date):
     if faq_items:
         graph.append({"@type": "FAQPage", "@id": url + "#faq", "mainEntity": faq_items})
 
-    ctx = base_context(config, title, desc, guide_url(g), og_type="article", head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}), body_class="guide-page")
+    stem = guide_url(g)
+    stamp = stamp_for(
+        stem, shell_fingerprint(), load_text(TEMPLATES / "guide.html"), g["body"],
+        config_fingerprint(config), build_date=build_date,
+        default_date=g.get("updated") or source_date,
+    )
+    # Never claim a modification earlier than the editorial date in frontmatter.
+    modified = max(stamp, g.get("updated", stamp))
+    for node in graph:
+        if node.get("@type") == "Article":
+            node["dateModified"] = modified
+
+    ctx = base_context(config, title, desc, guide_url(g), og_type="article",
+                       head_extra=jsonld({"@context": "https://schema.org", "@graph": graph}),
+                       body_class="guide-page")
     ctx.update({
         "h1": g["h1"],
         "body": g["html"],
         "guide_links": f"<ul>{guide_links}</ul>",
         "published": g.get("updated", build_date),
-        "updated": g.get("updated", build_date),
+        "updated": modified,
     })
     ctx["content"] = render(load_text(TEMPLATES / "guide.html"), ctx)
     return ctx
@@ -1416,26 +1654,25 @@ def write_robots(config):
     write_file(DIST / "robots.txt", "\n".join(lines) + "\n")
 
 
-def write_sitemap(config, pages):
+def write_sitemap(config, entries):
+    """Write the sitemap from (canonical_path, lastmod) pairs.
+
+    Only pages that are actually indexable are listed: a noindex URL in a
+    sitemap is a contradiction that wastes crawl budget, and a uniform "today"
+    lastmod on 2,097 URLs is a freshness signal no crawler believes.
+    """
     base = config["base_url"].rstrip("/")
-    today = date.today().isoformat()
-    total = len(pages)
-    if total <= 5000:
-        urls = []
-        for path in sorted(pages):
-            # A sitemap must list the CANONICAL url. Pages are keyed by file path
-            # ("/how-to/index.html"), but every page's canonical is the clean
-            # directory form ("/how-to/"), so strip the index.html or the sitemap
-            # advertises URLs that no page claims and search engines discard.
-            if path.endswith("/index.html"):
-                path = path[: -len("index.html")]
-            url = base + path
-            urls.append(f"  <url>\n    <loc>{html_esc(url)}</loc>\n    <lastmod>{today}</lastmod>\n  </url>")
-        xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n"
-        write_file(DIST / "sitemap.xml", xml)
-    else:
-        # Split if >5000
-        pass
+    urls = []
+    for path, lastmod in sorted(entries):
+        url = base + path
+        urls.append(
+            f"  <url>\n    <loc>{html_esc(url)}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>"
+        )
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           + "\n".join(urls) + "\n</urlset>\n")
+    write_file(DIST / "sitemap.xml", xml)
+
 
 
 def write_llms(config, guides):
@@ -1448,7 +1685,7 @@ def write_llms(config, guides):
         "",
         f"- [Home]({base}/): Search every symbol by name, alias, glyph or code.",
         f"- [All symbol groups]({base}/symbols/): Browse 33 curated groups.",
-        f"- [All symbols]({base}/all-symbols/): Every symbol, grouped by Unicode block.",
+        f"- [All symbols]({base}/all-symbols/): Every symbol, grouped by Unicode block, paginated at 250 per page.",
         f"- [Legacy Alt codes]({base}/legacy-alt-codes/): Full 0–255 OEM 437 / Windows-1252 table.",
         f"- [All how-to guides]({base}/how-to/): Every guide to typing symbols on Windows, macOS, HTML and in code.",
     ]
@@ -1459,6 +1696,8 @@ def write_llms(config, guides):
         "## Notes",
         "",
         "All content is server-rendered static HTML. JavaScript is progressive enhancement only. The dataset contains 2,052 symbols.",
+        "Every symbol page is reachable from /all-symbols/. Pages below the indexation threshold carry noindex,follow; they remain readable and linkable.",
+        "The search index at /assets/symbols.json is loaded on demand, not on page load.",
     ])
     write_file(DIST / "llms.txt", "\n".join(lines) + "\n")
 
@@ -1535,6 +1774,13 @@ def main():
         group_symbols[g["slug"]] = list(dict.fromkeys(g["symbols"]))
 
     build_date = date.today().isoformat()
+    STAMPS.update(load_stamps())
+    # Seed honest first-run lastmod values from the source files' git dates
+    # rather than stamping 2,000 URLs with today.
+    symbol_source_date = git_date("data/symbols.json", build_date)
+    group_source_date = git_date("data/groups.json", build_date)
+    guide_source_date = git_date("content/guides", build_date)
+    shell_source_date = git_date("templates", build_date)
 
     # Wipe dist contents
     if DIST.exists():
@@ -1556,6 +1802,8 @@ def main():
     write_file(DIST / "index.html", home_html)
     pages_html["/index.html"] = home_html
     counts["home"] += 1
+    stamp_for("/", shell_fingerprint(), load_text(TEMPLATES / "home.html"),
+              config_fingerprint(config), build_date=build_date, default_date=shell_source_date)
 
     # Symbols index
     idx_ctx = build_symbols_index_page(config, symbols, build_date)
@@ -1563,10 +1811,12 @@ def main():
     write_file(DIST / "symbols" / "index.html", idx_html)
     pages_html["/symbols/index.html"] = idx_html
     counts["symbols_index"] += 1
+    stamp_for("/symbols/", shell_fingerprint(), load_text(TEMPLATES / "symbols-index.html"),
+              config_fingerprint(config), build_date=build_date, default_date=group_source_date)
 
     # Groups
     for g in groups:
-        gctx = build_group_page(g, sym_by_id, config, build_date)
+        gctx = build_group_page(g, sym_by_id, config, build_date, source_date=group_source_date)
         ghtml = render(load_text(TEMPLATES / "base.html"), gctx)
         write_file(DIST / "symbols" / g["slug"] / "index.html", ghtml)
         pages_html[group_url(g) + "index.html"] = ghtml
@@ -1576,8 +1826,10 @@ def main():
     # Every tile in the search results, the group pages and the related lists is a
     # clickable <button data-href="/symbol/<id>-<slug>/"> that app.js navigates to,
     # so generating only the popular ones left ~1,843 tiles pointing at a 404.
+    # Pages below the weight floor still exist (no dead tiles, no dead internal
+    # links) but ship as noindex,follow and stay out of the sitemap.
     for s in symbols:
-        sctx = build_symbol_page(s, sym_by_id, groups, config, build_date)
+        sctx = build_symbol_page(s, sym_by_id, groups, config, build_date, source_date=symbol_source_date)
         spage = render(load_text(TEMPLATES / "base.html"), sctx)
         write_file(DIST / "symbol" / f"{s['id']}-{slugify(s['name'])}" / "index.html", spage)
         pages_html[symbol_url(s) + "index.html"] = spage
@@ -1589,20 +1841,24 @@ def main():
     write_file(DIST / "legacy-alt-codes" / "index.html", table_html)
     pages_html["/legacy-alt-codes/index.html"] = table_html
     counts["table"] += 1
+    stamp_for("/legacy-alt-codes/", shell_fingerprint(), load_text(TEMPLATES / "table.html"),
+              config_fingerprint(config), build_date=build_date, default_date=shell_source_date)
 
     # Guides
     for g in guides:
-        gpage_ctx = build_guide_page(g, config, build_date)
+        gpage_ctx = build_guide_page(g, config, build_date, source_date=guide_source_date)
         gpage = render(load_text(TEMPLATES / "base.html"), gpage_ctx)
         write_file(DIST / "how-to" / g["slug"] / "index.html", gpage)
         pages_html[guide_url(g) + "index.html"] = gpage
         counts["guide"] += 1
-    # All-symbols index — every page gets a static inbound link from this hub
-    as_ctx = build_all_symbols_page(config, symbols, build_date)
-    as_html = render(load_text(TEMPLATES / "base.html"), as_ctx)
-    write_file(DIST / "all-symbols" / "index.html", as_html)
-    pages_html["/all-symbols/index.html"] = as_html
-    counts["all_symbols"] += 1
+    # All-symbols hub, paginated at 250 symbols per page
+    for as_page in build_all_symbols_pages(config, symbols, build_date, source_date=symbol_source_date):
+        as_path = as_page["path"]
+        as_html = render(load_text(TEMPLATES / "base.html"), as_page["ctx"])
+        target = DIST / as_path.strip("/")
+        write_file(target / "index.html", as_html)
+        pages_html[as_path + "index.html"] = as_html
+        counts["all_symbols"] += 1
 
     # Guides index (/how-to/) — the breadcrumb target for every guide
     gi_ctx = build_guides_index_page(config, build_date)
@@ -1610,6 +1866,8 @@ def main():
     write_file(DIST / "how-to" / "index.html", gi_html)
     pages_html["/how-to/index.html"] = gi_html
     counts["guides_index"] += 1
+    stamp_for("/how-to/", shell_fingerprint(), load_text(TEMPLATES / "guides-index.html"),
+              config_fingerprint(config), build_date=build_date, default_date=guide_source_date)
 
     # 404
     nf_ctx = build_notfound_page(config)
@@ -1621,10 +1879,22 @@ def main():
     write_file(DIST / "assets" / "symbols.json", json.dumps(symbols, ensure_ascii=False))
 
     # Robots, sitemap, llms
-    sitemap_pages = [p for p in pages_html if p != "/404.html"]
+    # The sitemap lists only pages that render as indexable: a noindex URL in a
+    # sitemap contradicts itself and burns crawl budget.
+    entries = []
+    for path, html in pages_html.items():
+        if path == "/404.html":
+            continue
+        if re.search(r'<meta name="robots" content="noindex', html):
+            continue
+        clean = path[: -len("index.html")] if path.endswith("/index.html") else path
+        entries.append((clean, PAGE_STAMPS.get(clean, build_date)))
     write_robots(config)
-    write_sitemap(config, sitemap_pages)
+    write_sitemap(config, entries)
     write_llms(config, guides)
+    save_stamps(STAMPS)
+    indexed_symbols = sum(1 for p in pages_html if p.startswith("/symbol/")
+                          and not re.search(r'<meta name="robots" content="noindex', pages_html[p]))
 
     # Orphan check
     reachable = reachable_from(pages_html, "/index.html")
@@ -1647,6 +1917,8 @@ def main():
     print(f"  Symbol pages:{counts['symbol']}")
     print(f"  404:         {counts['notfound']}")
     print(f"  Total HTML:  {sum(counts.values())}")
+    print(f"  Indexed symbols: {indexed_symbols} of {counts['symbol']} (rest noindex,follow)")
+    print(f"  Sitemap URLs:{len(entries)}")
     print(f"  Total bytes: {total_bytes}")
     print(f"  Orphan check: {'PASS' if orphan_ok else 'FAIL'}")
 

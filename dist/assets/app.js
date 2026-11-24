@@ -17,7 +17,7 @@
   const countEl=document.getElementById('result-count');
   const recentEl=document.getElementById('recent-copied');
   const recentGrid=document.getElementById('recent-grid');
-  let symbols=[],debounce;
+  let symbols=[],debounce,indexPromise=null,indexLoaded=false;
 
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function slugify(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
@@ -33,12 +33,20 @@
   function score(s,q){const lq=q.toLowerCase();if(s.glyph===q)return 1000;if(s.aliases&&s.aliases.some(a=>a.toLowerCase()===lq))return 900;if(s.name.toLowerCase()===lq)return 850;const aliasPrefix=s.aliases&&s.aliases.some(a=>a.toLowerCase().startsWith(lq));const namePrefix=s.name.toLowerCase().startsWith(lq);if(aliasPrefix)return 800;if(namePrefix)return 750;const aliasSub=s.aliases&&s.aliases.some(a=>a.toLowerCase().includes(lq));const nameSub=s.name.toLowerCase().includes(lq);if(aliasSub)return 600;if(nameSub)return 550;if(String(s.codepoint)===q||s.unicode.toLowerCase()===lq.replace(/u\+/,'')||s.id.toLowerCase()===lq.replace(/u\+/,'u'))return 500;if(s.alt_legacy&&s.alt_legacy.includes(q))return 500;if(s.alt_decimal===q)return 500;return 0;}
   function filterList(q){const g=groupFilter?groupFilter.value:'';const a=hasAlt?hasAlt.checked:false;const o=hasOption?hasOption.checked:false;return symbols.filter(s=>{if(g&&!s.groups.includes(g))return false;if(a&&!(s.alt_legacy&&s.alt_legacy.length))return false;if(o&&!s.mac_option)return false;return score(s,q)>0;}).sort((x,y)=>{const sx=score(x,q),sy=score(y,q);if(sx!==sy)return sy-sx;if(y.weight!==x.weight)return y.weight-x.weight;return x.codepoint-y.codepoint;});}
   function renderResults(list){const total=list.length;const show=list.slice(0,200);if(countEl)countEl.textContent=total+' result'+(total!==1?'s':'');if(resultsEl)resultsEl.innerHTML=show.map(tile).join('')+(total>200?'<p class="result-count" style="grid-column:1/-1;margin-top:8px;">Showing 200 of '+total+'</p>':'');}
-  function doSearch(){const q=input?input.value.trim():'';if(!q){renderResults(symbols.slice(0,240));if(countEl)countEl.textContent=symbols.length+' symbols';return;}renderResults(filterList(q));}
+  function doSearch(){if(!indexLoaded)return;const q=input?input.value.trim():'';if(!q){renderResults(symbols.slice(0,240));if(countEl)countEl.textContent=symbols.length+' symbols';return;}renderResults(filterList(q));}
+  // The search index is 1.1 MB of JSON. Fetching it on page load cost every
+  // visitor ~130 KB gzipped for a feature most never touch, so it now loads on
+  // the first focus/keystroke in the search box and is memoised after that.
+  function loadIndex(){if(!indexPromise){indexPromise=fetch('/assets/symbols.json').then(r=>r.json()).then(d=>{symbols=d;indexLoaded=true;renderRecent();return d;}).catch(e=>{indexPromise=null;throw e;});}return indexPromise;}
+  function withIndex(fn){loadIndex().then(fn).catch(()=>{if(resultsEl&&resultsEl.children.length===0)resultsEl.innerHTML='<p class="noscript-notice">Could not load the search index. Reload to try again.</p>';});}
 
-  if(input){input.addEventListener('input',()=>{clearTimeout(debounce);debounce=setTimeout(doSearch,90);});}
-  if(groupFilter)groupFilter.addEventListener('change',doSearch);
-  if(hasAlt)hasAlt.addEventListener('change',doSearch);
-  if(hasOption)hasOption.addEventListener('change',doSearch);
+  if(input){
+    input.addEventListener('focus',()=>withIndex(doSearch));
+    input.addEventListener('input',()=>{clearTimeout(debounce);debounce=setTimeout(()=>withIndex(doSearch),90);});
+  }
+  if(groupFilter)groupFilter.addEventListener('change',()=>withIndex(doSearch));
+  if(hasAlt)hasAlt.addEventListener('change',()=>withIndex(doSearch));
+  if(hasOption)hasOption.addEventListener('change',()=>withIndex(doSearch));
   document.addEventListener('keydown',e=>{const tag=e.target.tagName;if((e.key==='/'||((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'))&&tag!=='INPUT'&&tag!=='TEXTAREA'&&tag!=='SELECT'){e.preventDefault();input&&input.focus();}});
   let focused=-1;
   document.addEventListener('keydown',e=>{if(!resultsEl||!['ArrowDown','ArrowUp','Enter','Escape'].includes(e.key))return;const btns=Array.from(resultsEl.querySelectorAll('.sym-copy'));if(e.key==='Escape'){if(input){input.value='';input.blur();doSearch();}return;}if(!btns.length)return;if(e.key==='Enter'&&focused>=0&&focused<btns.length){e.preventDefault();const t=btns[focused].querySelector('[data-copy]');if(t)copy(t.dataset.copy,t.dataset.label);return;}if(e.key==='ArrowDown'){e.preventDefault();focused=Math.min(focused+1,btns.length-1);btns[focused]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();focused=Math.max(focused-1,-1);if(focused>=0)btns[focused]?.focus();else input?.focus();}});
@@ -53,7 +61,9 @@
     copy(text,label);
   });
 
-  fetch('/assets/symbols.json').then(r=>r.json()).then(data=>{symbols=data;doSearch();renderRecent();}).catch(()=>{if(resultsEl&&resultsEl.children.length===0)resultsEl.innerHTML='<p class="noscript-notice">Could not load search index.</p>';});
+  // Nothing is fetched here on purpose: the recent-copied grid renders from
+  // localStorage using the glyph alone, and the search index loads on focus.
+  renderRecent();
 
   // Hamburger menu (mobile). Progressive enhancement: with JS off the nav stays
   // visible and wraps, because the dropdown rules are scoped to .js.

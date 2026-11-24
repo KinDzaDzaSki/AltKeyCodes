@@ -9,7 +9,10 @@
   "email": "hello@altkeycodes.com",
   "home_symbol_preview": 240,
   "symbol_page_min_weight": 40,
-  "og_image": "",
+  "index_symbols_with_mac_option": true,
+  "og_image": "/assets/og/default.png",
+  "og_image_width": 1200,
+  "og_image_height": 630,
   "analytics": "GA4",
   "ads": false,
   "ga4_measurement_id": "G-Y06BYKYVG2"
